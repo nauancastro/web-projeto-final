@@ -1,13 +1,13 @@
 # :checkered_flag: BarberTime
 
-BarberTime é um projeto de plataforma web concebido para facilitar a gestão de agendamentos e serviços em barbearias. A proposta é criar um site onde clientes possam acessar informações sobre horários disponíveis, selecionar serviços específicos e realizar agendamentos de forma prática e eficiente.
+BarberTime é um projeto de plataforma web com caráter extensionista, voltado para facilitar a gestão de agendamentos e serviços em barbearias de comunidades locais. A proposta é criar um site acessível onde clientes possam visualizar horários disponíveis, selecionar serviços específicos e realizar agendamentos de maneira prática. Além disso, o projeto busca promover a inclusão digital e apoiar pequenos empreendedores do setor de barbearia.
 
 ## :technologist: Membros da equipe
 
 536825 - Nauan Aires (S.I) | 509954 - Fernando Castro (S.I)
 
 ## :bulb: Objetivo Geral
-O objetivo do projeto é desenvolver um sistema que ofereça ferramentas de organização para profissionais, incluindo gerenciamento de agenda e confirmação de atendimentos, atendendo a um público diversificado com foco na simplicidade e acessibilidade. Busca-se otimizar a operação das barbearias e proporcionar uma experiência prática para os usuários finais.
+O objetivo geral do projeto é oferecer uma solução tecnológica acessível que contribua para a organização e o crescimento de barbearias comunitárias, fornecendo ferramentas para o gerenciamento de agenda e serviços. Por meio da interação direta com as comunidades beneficiadas, o BarberTime visa fortalecer pequenos negócios locais, promover a inclusão digital e capacitar profissionais, alinhando-se aos princípios extensionistas de impacto social e troca de conhecimentos entre a academia e a sociedade.
 
 ## :eyes: Público-Alvo
 Público-alvo do projeto
