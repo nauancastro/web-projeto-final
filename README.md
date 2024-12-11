@@ -1,13 +1,14 @@
-# :checkered_flag: NOME DO PROJETO
+# :checkered_flag: BarberTime
 
-Breve descrição do que o seu projeto faz.
+BarberTime é um projeto de plataforma web concebido para facilitar a gestão de agendamentos e serviços em barbearias. A proposta é criar um site onde clientes possam acessar informações sobre horários disponíveis, selecionar serviços específicos e realizar agendamentos de forma prática e eficiente.
 
 ## :technologist: Membros da equipe
 
-Matrícula, nome e curso dos participantes.
+536825 - Nauan Aires (S.I)
+509954 - Fernando Castro (S.I)
 
 ## :bulb: Objetivo Geral
-Descrever o objetivo de geral do projeto
+O objetivo do projeto é desenvolver um sistema que ofereça ferramentas de organização para profissionais, incluindo gerenciamento de agenda e confirmação de atendimentos, atendendo a um público diversificado com foco na simplicidade e acessibilidade. Busca-se otimizar a operação das barbearias e proporcionar uma experiência prática para os usuários finais.
 
 ## :eyes: Público-Alvo
 Público-alvo do projeto
