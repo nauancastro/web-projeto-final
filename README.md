@@ -65,7 +65,14 @@ Cada tipo de usuário terá acesso exclusivo ou compartilhado às funcionalidade
 
 ## :triangular_flag_on_post:  Principais funcionalidades da aplicação
 
-Descreve ou liste brevemente as principais funcionalidades da aplicação que será desenvolvida. Destaque a funcionalidades que serão acessévies a todos os usuários e aquelas restriras a usuários logados.
+- **Acessíveis a Todos os Usuários:**  
+  - Visualizar informações sobre a barbearia, serviços e barbeiros disponíveis.  
+  - Realizar um pré-cadastro para acesso completo.  
+
+- **Restritas a Usuários Logados:**  
+  - **Clientes:** Agendar, cancelar e remarcar serviços.  
+  - **Barbeiros:** Gerenciar agenda e atendimentos.  
+  - **Administrador:** Gerenciar barbeiros, serviços e horários gerais.  
 
 ## :spiral_calendar: Entidades ou tabelas do sistema
 
