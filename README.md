@@ -4,8 +4,7 @@ BarberTime é um projeto de plataforma web concebido para facilitar a gestão de
 
 ## :technologist: Membros da equipe
 
-536825 - Nauan Aires (S.I)
-509954 - Fernando Castro (S.I)
+536825 - Nauan Aires (S.I) | 509954 - Fernando Castro (S.I)
 
 ## :bulb: Objetivo Geral
 O objetivo do projeto é desenvolver um sistema que ofereça ferramentas de organização para profissionais, incluindo gerenciamento de agenda e confirmação de atendimentos, atendendo a um público diversificado com foco na simplicidade e acessibilidade. Busca-se otimizar a operação das barbearias e proporcionar uma experiência prática para os usuários finais.
