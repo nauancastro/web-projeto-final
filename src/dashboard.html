@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel do Barbeiro - BarberTime</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="./styles/output.css"/>
+</head>
+<body class="bg-black text-white">
+    <header class="bg-gray-900 text-white py-4 flex justify-center">
+        <img src="./assets/logo.webp" alt="BarberTime Logo" class="w-20 h-20 rounded-full shadow-lg hover:scale-110 duration-200">
+    </header>
+
+    <main class="container mx-auto px-4 py-8">
+        <h2 class="text-2xl font-bold text-center mb-6">Reservas Agendadas</h2>
+        <div class="bg-gray-900 p-6 rounded-lg shadow-lg w-full max-w-3xl mx-auto">
+            <table class="w-full border-collapse border border-gray-700">
+                <thead>
+                    <tr class="bg-gray-800 text-white">
+                        <th class="border border-gray-700 px-4 py-2">Data</th>
+                        <th class="border border-gray-700 px-4 py-2">Horário</th>
+                        <th class="border border-gray-700 px-4 py-2">Cliente</th>
+                        <th class="border border-gray-700 px-4 py-2">Serviço</th>
+                    </tr>
+                </thead>
+                <tbody id="reservations-list">
+                    <tr>
+                        <td class="border border-gray-700 px-4 py-2 text-center">15/02/2025</td>
+                        <td class="border border-gray-700 px-4 py-2 text-center">14:00</td>
+                        <td class="border border-gray-700 px-4 py-2 text-center">João Silva</td>
+                        <td class="border border-gray-700 px-4 py-2 text-center">Corte de cabelo</td>
+                    </tr>
+                    <tr>
+                        <td class="border border-gray-700 px-4 py-2 text-center">16/02/2025</td>
+                        <td class="border border-gray-700 px-4 py-2 text-center">16:30</td>
+                        <td class="border border-gray-700 px-4 py-2 text-center">Carlos Santos</td>
+                        <td class="border border-gray-700 px-4 py-2 text-center">Corte + Barba</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <footer class="bg-gray-900 text-white py-4 text-center">
+        <p>&copy; 2025 BarberTime. Todos os direitos reservados.</p>
+    </footer>
+</body>
+</html>
