@@ -1898,10 +1898,6 @@ video {
   --tw-bg-opacity: 0.7;
 }
 
-.bg-home {
-  background-image: url('/src/assets/bg.jpg');
-}
-
 .decoration-slice {
   -webkit-box-decoration-break: slice;
           box-decoration-break: slice;
