@@ -1899,7 +1899,7 @@ video {
 }
 
 .bg-home {
-  background-image: url('/bg.jpg');
+  background-image: /bg.jpg;
 }
 
 .decoration-slice {
