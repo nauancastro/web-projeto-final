@@ -7,45 +7,43 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="./styles/output.css"/>
 </head>
-<body class="bg-gray-100 text-gray-800">
-    <header class="bg-blue-600 text-white py-4">
-        <div class="container mx-auto px-4">
-            <h1 class="text-2xl font-bold">BarberTime</h1>
-        </div>
+<body class="bg-black text-white">
+    <header class="bg-gray-900 text-white py-4 flex justify-center">
+        <img src="./assets/logo.webp" alt="BarberTime Logo" class="w-20 h-20 rounded-full shadow-lg hover:scale-110 duration-200">
     </header>
 
     <main class="w-full h-screen bg-home bg-cover bg-center bg-opacity-50 relative">
-        <div class="absolute inset-0 bg-black bg-opacity-40"></div>
+        <div class="absolute inset-0 bg-black bg-opacity-70"></div>
         <div class="relative z-10 flex flex-col justify-center items-center h-full">
-            <div class="bg-white p-6 rounded-lg shadow-lg w-11/12 max-w-md">
-                <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Cadastro de Reserva</h2>
+            <div class="bg-gray-900 p-6 rounded-lg shadow-lg w-11/12 max-w-md text-white">
+                <h2 class="text-2xl font-bold mb-6 text-center">Cadastro de Reserva</h2>
                 <form action="#" method="POST" class="space-y-4">
                     <div>
-                        <label for="date" class="block text-gray-700 font-medium mb-1">Data</label>
-                        <input type="date" id="date" name="date" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring focus:ring-blue-300">
+                        <label for="date" class="block font-medium mb-1">Data</label>
+                        <input type="date" id="date" name="date" class="w-full border border-gray-700 rounded-lg px-3 py-2 bg-gray-800 text-white focus:outline-none focus:ring focus:ring-gray-500">
                     </div>
                     <div>
-                        <label for="time" class="block text-gray-700 font-medium mb-1">Horário</label>
-                        <input type="time" id="time" name="time" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring focus:ring-blue-300">
+                        <label for="time" class="block font-medium mb-1">Horário</label>
+                        <input type="time" id="time" name="time" class="w-full border border-gray-700 rounded-lg px-3 py-2 bg-gray-800 text-white focus:outline-none focus:ring focus:ring-gray-500">
                     </div>
                     <div>
-                        <label for="barber" class="block text-gray-700 font-medium mb-1">Barbeiro Selecionado</label>
-                        <select id="barber" name="barber" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring focus:ring-blue-300">
+                        <label for="barber" class="block font-medium mb-1">Barbeiro Selecionado</label>
+                        <select id="barber" name="barber" class="w-full border border-gray-700 rounded-lg px-3 py-2 bg-gray-800 text-white focus:outline-none focus:ring focus:ring-gray-500">
                             <option value="">Selecione um barbeiro</option>
                             <option value="barber1">Barbeiro 1</option>
                             <option value="barber2">Barbeiro 2</option>
                         </select>
                     </div>
                     <div>
-                        <label for="service" class="block text-gray-700 font-medium mb-1">Tipo de Serviço</label>
-                        <select id="service" name="service" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring focus:ring-blue-300">
+                        <label for="service" class="block font-medium mb-1">Tipo de Serviço</label>
+                        <select id="service" name="service" class="w-full border border-gray-700 rounded-lg px-3 py-2 bg-gray-800 text-white focus:outline-none focus:ring focus:ring-gray-500">
                             <option value="">Selecione o serviço</option>
                             <option value="cut">Corte de cabelo</option>
                             <option value="shave">Barba</option>
                             <option value="combo">Corte + Barba</option>
                         </select>
                     </div>
-                    <button type="submit" class="w-full bg-blue-600 text-white font-bold py-2 rounded-lg hover:bg-blue-500 focus:outline-none focus:ring focus:ring-blue-300">
+                    <button type="submit" class="w-full bg-gray-700 text-white font-bold py-2 rounded-lg hover:bg-gray-600 focus:outline-none focus:ring focus:ring-gray-500">
                         Fazer Reserva
                     </button>
                 </form>
@@ -53,15 +51,15 @@
         </div>
     </main>
 
-    <footer class="bg-gray-800 text-white py-4">
+    <footer class="bg-gray-900 text-white py-4">
         <div class="container mx-auto px-4 text-center">
             <p>&copy; 2025 BarberTime. Todos os direitos reservados.</p>
             <div class="mt-4">
-                <a href="#" class="text-blue-400 hover:underline mx-2">Facebook</a>
-                <a href="#" class="text-blue-400 hover:underline mx-2">Instagram</a>
-                <a href="#" class="text-blue-400 hover:underline mx-2">Twitter</a>
+                <a href="#" class="text-gray-400 hover:underline mx-2">Facebook</a>
+                <a href="#" class="text-gray-400 hover:underline mx-2">Instagram</a>
+                <a href="#" class="text-gray-400 hover:underline mx-2">Twitter</a>
             </div>
-            <button class="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-500" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+            <button class="mt-4 bg-gray-700 text-white px-4 py-2 rounded-lg hover:bg-gray-600" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
                 Voltar ao topo
             </button>
         </div>
