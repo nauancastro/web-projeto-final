@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BarberTime</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./src/styles/output.css" />
+  </head>
+  <body class="bg-black text-white">
+    <header class="bg-gray-900 text-white py-4 flex justify-center">
+      <img
+        src="./src/assets/logo.webp"
+        alt="BarberTime Logo"
+        class="w-20 h-20 rounded-full shadow-lg hover:scale-110 duration-200"
+      />
+    </header>
+
+    <main
+      class="w-full h-screen bg-cover bg-center bg-opacity-50 relative"
+      style="background-image: url('src/assets/bg.jpg')"
+    >
+      <div class="absolute inset-0 bg-black bg-opacity-70"></div>
+      <div
+        class="relative z-10 flex flex-col justify-center items-center h-full"
+      >
+        <div
+          class="bg-gray-900 p-6 rounded-lg shadow-lg w-11/12 max-w-md text-white"
+        >
+          <h2 class="text-2xl font-bold mb-6 text-center">
+            Cadastro de Reserva
+          </h2>
+          <form
+            id="reserva-form"
+            onsubmit="criarReserva(event)"
+            class="space-y-4"
+          >
+            <div>
+              <label for="date" class="block font-medium mb-1">Data</label>
+              <input
+                type="date"
+                id="date"
+                name="date"
+                required
+                class="w-full border border-gray-700 rounded-lg px-3 py-2 bg-gray-800 text-white"
+              />
+            </div>
+            <div>
+              <label for="time" class="block font-medium mb-1">Horário</label>
+              <input
+                type="time"
+                id="time"
+                name="time"
+                required
+                class="w-full border border-gray-700 rounded-lg px-3 py-2 bg-gray-800 text-white"
+              />
+            </div>
+            <div>
+              <label for="barber" class="block font-medium mb-1"
+                >Barbeiro Selecionado</label
+              >
+              <select
+                id="barber"
+                name="barber"
+                required
+                class="w-full border border-gray-700 rounded-lg px-3 py-2 bg-gray-800 text-white"
+              >
+                <option value="Barbeiro 1">Barbeiro 1</option>
+                <option value="Barbeiro 2">Barbeiro 2</option>
+              </select>
+            </div>
+            <div>
+              <label for="service" class="block font-medium mb-1"
+                >Tipo de Serviço</label
+              >
+              <select
+                id="service"
+                name="service"
+                required
+                class="w-full border border-gray-700 rounded-lg px-3 py-2 bg-gray-800 text-white"
+              >
+                <option value="Corte de cabelo">Corte de cabelo</option>
+                <option value="Barba">Barba</option>
+                <option value="Corte + Barba">Corte + Barba</option>
+              </select>
+            </div>
+            <button
+              type="submit"
+              id="btn-reserva"
+              class="w-full bg-gray-700 text-white font-bold py-2 rounded-lg hover:bg-gray-600"
+            >
+              Fazer Reserva
+            </button>
+            <p id="mensagem-reserva" class="text-center mt-4 text-sm"></p>
+          </form>
+        </div>
+      </div>
+    </main>
+
+    <footer class="bg-gray-900 text-white py-4">
+      <div class="container mx-auto px-4 text-center">
+        <p>&copy; 2025 BarberTime. Todos os direitos reservados.</p>
+        <div class="mt-4">
+          <a href="#" class="text-gray-400 hover:underline mx-2">Facebook</a>
+          <a href="#" class="text-gray-400 hover:underline mx-2">Instagram</a>
+          <a href="#" class="text-gray-400 hover:underline mx-2">Twitter</a>
+        </div>
+        <button
+          class="mt-4 bg-gray-700 text-white px-4 py-2 rounded-lg hover:bg-gray-600"
+          onclick="window.scrollTo({top: 0, behavior: 'smooth'})"
+        >
+          Voltar ao topo
+        </button>
+      </div>
+    </footer>
+    <script src="./scripts/src/api.js"></script>
+  </body>
+</html>
