@@ -25,64 +25,65 @@ O BarberTime tem como impacto esperado facilitar o acesso dos clientes a serviç
 
 ## :people_holding_hands: Papéis ou tipos de usuário da aplicação
 
-A aplicação BarberTime terá os seguintes tipos de usuários:  
+A aplicação BarberTime terá os seguintes tipos de usuários:
 
-### 1. **Cliente**  
+### 1. **Cliente**
 
-- Usuário que agenda serviços na barbearia.  
-- **Funcionalidades:**  
-  - Visualizar horários disponíveis.  
-  - Realizar agendamentos.  
-  - Cancelar ou remarcar agendamentos.  
-  - Avaliar os serviços prestados.  
+- Usuário que agenda serviços na barbearia.
+- **Funcionalidades:**
+  - Visualizar horários disponíveis.
+  - Realizar agendamentos.
+  - Cancelar ou remarcar agendamentos.
+  - Avaliar os serviços prestados.
 
-### 2. **Barbeiro**  
+### 2. **Barbeiro**
 
-- Profissional que presta serviços na barbearia.  
-- **Funcionalidades:**  
-  - Gerenciar a própria agenda.  
-  - Confirmar, cancelar ou reagendar atendimentos.  
-  - Visualizar relatórios de atendimento (opcional).  
+- Profissional que presta serviços na barbearia.
+- **Funcionalidades:**
+  - Gerenciar a própria agenda.
+  - Confirmar, cancelar ou reagendar atendimentos.
+  - Visualizar relatórios de atendimento (opcional).
 
-### 3. **Administrador da Barbearia**  
+### 3. **Administrador da Barbearia**
 
-- Usuário responsável por gerenciar a barbearia.  
-- **Funcionalidades:**  
-  - Gerenciar o cadastro de barbeiros e serviços oferecidos.  
-  - Visualizar e ajustar a agenda geral da barbearia.  
-  - Configurar horários de funcionamento.  
-  - Acompanhar métricas e relatórios gerais.  
+- Usuário responsável por gerenciar a barbearia.
+- **Funcionalidades:**
+  - Gerenciar o cadastro de barbeiros e serviços oferecidos.
+  - Visualizar e ajustar a agenda geral da barbearia.
+  - Configurar horários de funcionamento.
+  - Acompanhar métricas e relatórios gerais.
 
-### 4. **Usuário Não Logado**  
+### 4. **Usuário Não Logado**
 
-- Visitante que acessa a aplicação sem autenticação.  
-- **Funcionalidades:**  
-  - Visualizar informações sobre a barbearia e serviços oferecidos.  
-  - Consultar barbeiros disponíveis.  
-  - Realizar um pré-cadastro para se tornar cliente.  
+- Visitante que acessa a aplicação sem autenticação.
+- **Funcionalidades:**
+  - Visualizar informações sobre a barbearia e serviços oferecidos.
+  - Consultar barbeiros disponíveis.
+  - Realizar um pré-cadastro para se tornar cliente.
 
 Cada tipo de usuário terá acesso exclusivo ou compartilhado às funcionalidades, garantindo que as operações sejam realizadas de forma eficiente e segura.
 
-## :triangular_flag_on_post:  Principais funcionalidades da aplicação
+## :triangular_flag_on_post: Principais funcionalidades da aplicação
 
-- **Acessíveis a Todos os Usuários:**  
-  - Visualizar informações sobre a barbearia, serviços e barbeiros disponíveis.  
-  - Realizar um pré-cadastro para acesso completo.  
+- **Acessíveis a Todos os Usuários:**
 
-- **Restritas a Usuários Logados:**  
-  - **Clientes:** Agendar, cancelar e remarcar serviços.  
-  - **Barbeiros:** Gerenciar agenda e atendimentos.  
-  - **Administrador:** Gerenciar barbeiros, serviços e horários gerais.  
+  - Visualizar informações sobre a barbearia, serviços e barbeiros disponíveis.
+  - Realizar um pré-cadastro para acesso completo.
+
+- **Restritas a Usuários Logados:**
+  - **Clientes:** Agendar, cancelar e remarcar serviços.
+  - **Barbeiros:** Gerenciar agenda e atendimentos.
+  - **Administrador:** Gerenciar barbeiros, serviços e horários gerais.
 
 ## :spiral_calendar: Entidades ou tabelas do sistema
 
 Liste as principais entidades do sistema.
 
-----
+---
 
 :warning::warning::warning: As informações a seguir devem ser enviadas juntamente com a versão final do projeto. :warning::warning::warning:
 
-----
+---
 
 ## :desktop_computer: Tecnologias e frameworks utilizados
 
@@ -96,17 +97,17 @@ Lista as tecnologias, frameworks e bibliotecas utilizados.
 
 ## :shipit: Operações implementadas para cada entidade da aplicação
 
-| Entidade| Criação | Leitura | Atualização | Remoção |
-| --- | --- | --- | --- | --- |
-| Entidade 1 | X |  X  |  | X |
-| Entidade 2 | X |    |  X | X |
-| Entidade 3 | X |    |  |  |
+| Entidade   | Criação | Leitura | Atualização | Remoção |
+| ---------- | ------- | ------- | ----------- | ------- |
+| Entidade 1 | X       | X       |             | X       |
+| Entidade 2 | X       |         | X           | X       |
+| Entidade 3 | X       |         |             |         |
 
 > Lembre-se que é necessário implementar o CRUD de pelo menos duas entidades.
 
 ## :neckbeard: Rotas da API REST utilizadas
 
-| Método HTTP | URL |
-| --- | --- |
-| GET | api/entidade1/|
-| POST | api/entidade2 |
+| Método HTTP | URL            |
+| ----------- | -------------- |
+| GET         | api/entidade1/ |
+| POST        | api/entidade2  |

@@ -2,6 +2,6 @@
  * reserva service
  */
 
-import { factories } from '@strapi/strapi';
+import { factories } from "@strapi/strapi";
 
-export default factories.createCoreService('api::reserva.reserva');
+export default factories.createCoreService("api::reserva.reserva");

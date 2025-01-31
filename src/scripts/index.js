@@ -1,3 +1,16 @@
+// -------INÍCIO-COMPONENTES-------
+// Footer
+async function loadFooter() {
+  try {
+    const response = await fetch("./src/components/footer.html");
+    const footerHTML = await response.text();
+    document.getElementById("footer-container").innerHTML = footerHTML;
+  } catch (error) {
+    console.error("Erro ao carregar o rodapé:", error);
+  }
+}
+loadFooter();
+// -------FIM-COMPONENTES----------
 
 // Função para abrir e fechar o menu mobile
 function toggleMenu() {

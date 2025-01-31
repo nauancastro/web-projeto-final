@@ -7,6 +7,6 @@ module.exports = {
         /**"home": "url('src/assets/bg.jpg')", */
       },
     },
-  },  
+  },
   plugins: [],
-}
+};
