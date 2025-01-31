@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastro de Usuário - BarberTime</title>
+    <title>Login - BarberTime</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="./styles/output.css"/>
 </head>
@@ -12,12 +12,8 @@
         <div class="flex justify-center mb-6">
             <img src="./assets/logo.webp" alt="BarberTime Logo" class="w-20 h-20 rounded-full shadow-lg">
         </div>
-        <h2 class="text-2xl font-bold text-center mb-6">Cadastro de Usuário</h2>
+        <h2 class="text-2xl font-bold text-center mb-6">Login - Administrador</h2>
         <form action="#" method="POST" class="space-y-4">
-            <div>
-                <label for="name" class="block font-medium mb-1">Nome</label>
-                <input type="text" id="name" name="name" required class="w-full border border-gray-700 rounded-lg px-3 py-2 bg-gray-800 text-white focus:outline-none focus:ring focus:ring-gray-500">
-            </div>
             <div>
                 <label for="email" class="block font-medium mb-1">E-mail</label>
                 <input type="email" id="email" name="email" required class="w-full border border-gray-700 rounded-lg px-3 py-2 bg-gray-800 text-white focus:outline-none focus:ring focus:ring-gray-500">
@@ -26,15 +22,14 @@
                 <label for="password" class="block font-medium mb-1">Senha</label>
                 <input type="password" id="password" name="password" required class="w-full border border-gray-700 rounded-lg px-3 py-2 bg-gray-800 text-white focus:outline-none focus:ring focus:ring-gray-500">
             </div>
-            <div>
-                <label for="phone" class="block font-medium mb-1">Telefone</label>
-                <input type="tel" id="phone" name="phone" required class="w-full border border-gray-700 rounded-lg px-3 py-2 bg-gray-800 text-white focus:outline-none focus:ring focus:ring-gray-500">
-            </div>
-            <button type="submit" class="w-full bg-blue-600 text-white font-bold py-2 rounded-lg hover:bg-blue-500 focus:outline-none focus:ring focus:ring-blue-400">
-                Cadastrar
+            <button type="submit" class="w-full bg-gray-700 text-white font-bold py-2 rounded-lg hover:bg-gray-600 focus:outline-none focus:ring focus:ring-gray-500">
+                Entrar como Administrador
             </button>
         </form>
-        <p class="text-center text-gray-400 mt-4">Já tem uma conta? <a href="login.html" class="text-blue-400 hover:underline">Faça login</a></p>
+        <button onclick="window.location.href='cadastra_usuario.html'" class="w-full bg-blue-600 text-white font-bold py-2 mt-4 rounded-lg hover:bg-blue-500 focus:outline-none focus:ring focus:ring-blue-400">
+            Criar Usuário
+        </button>
+        <p class="text-center text-gray-400 mt-4">Acesso exclusivo para administradores e barbeiros.</p>
     </div>
 </body>
 </html>
