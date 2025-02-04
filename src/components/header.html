@@ -1,0 +1,49 @@
+<nav class="bg-gray-900 py-4 shadow-lg w-full relative z-50">
+  <div class="container mx-auto flex justify-between items-center px-6">
+    <a href="index.html" class="text-white text-2xl font-bold">BarberTime</a>
+    <button class="block sm:hidden text-white text-3xl" onclick="toggleMenu()">
+      &#9776;
+    </button>
+    <ul
+      id="mobile-menu"
+      class="hidden sm:flex sm:space-x-6 absolute sm:static top-16 right-0 bg-gray-900 sm:bg-transparent w-full sm:w-auto py-4 sm:py-0 text-center sm:text-left"
+    >
+      <li>
+        <a
+          href="#barbeiros"
+          class="block sm:inline text-gray-400 hover:text-white py-2 sm:py-0"
+          >Barbeiros</a
+        >
+      </li>
+      <li>
+        <a
+          href="#servicos"
+          class="block sm:inline text-gray-400 hover:text-white py-2 sm:py-0"
+          >Serviços</a
+        >
+      </li>
+      <li>
+        <a
+          href="./src/reserva.html"
+          class="block sm:inline text-gray-400 hover:text-white py-2 sm:py-0"
+          >Reservas</a
+        >
+      </li>
+      <li>
+        <a
+          href="./src/login.html"
+          class="block sm:inline text-gray-400 hover:text-white py-2 sm:py-0"
+          >Login</a
+        >
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<button
+  id="back-to-top"
+  onclick="scrollToTop()"
+  class="hidden fixed bottom-5 right-5 bg-gray-700 text-white px-4 py-2 rounded-full shadow-lg hover:bg-gray-600"
+>
+  ↑ Topo
+</button>

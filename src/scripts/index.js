@@ -1,5 +1,5 @@
 // -------INÍCIO-COMPONENTES-------
-// Footer
+// INICIO FOOTER
 async function loadFooter() {
   try {
     // Verifica se a página está na raiz ou dentro da pasta ./src/
@@ -17,7 +17,26 @@ async function loadFooter() {
 }
 // Chama a função para carregar o rodapé
 loadFooter();
+// FIM FOOTER
+// INICIO HEADER
+async function loadHeader() {
+  try {
+    // Verifica se a página está na raiz ou dentro da pasta ./src/
+    const basePath = window.location.pathname.includes("/src") ? ".." : ".";
 
+    // Caminho correto para carregar o header
+    const response = await fetch(`${basePath}/src/components/header.html`);
+    const headerHTML = await response.text();
+
+    // Insere o cabeçalho na página
+    document.getElementById("header-container").innerHTML = headerHTML;
+  } catch (error) {
+    console.error("Erro ao carregar o rodapé:", error);
+  }
+}
+// Chama a função para carregar o header
+loadHeader();
+// FIM HEADER
 // -------FIM-COMPONENTES----------
 
 // Função para abrir e fechar o menu mobile
