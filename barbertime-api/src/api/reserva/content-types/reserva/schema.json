@@ -19,13 +19,16 @@
       "type": "time"
     },
     "cliente": {
-      "type": "string"
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "reservas_cliente"
     },
     "barbeiro": {
-      "type": "string"
-    },
-    "servico": {
-      "type": "string"
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "reservas_barbeiro"
     }
   }
 }

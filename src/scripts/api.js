@@ -1,4 +1,5 @@
-const API_URL = "http://localhost:1337/api/reservas";
+const API_URL_RESERVA = "http://localhost:1337/api/reservas";
+const API_URL_USERS = "http://localhost:1337/api/users";
 
 async function criarReserva(event) {
   event.preventDefault();
@@ -25,7 +26,7 @@ async function criarReserva(event) {
   };
 
   try {
-    const response = await fetch(API_URL, {
+    const response = await fetch(API_URL_RESERVA, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -50,5 +51,58 @@ async function criarReserva(event) {
     mensagemReserva.className = "text-red-500 text-center";
   } finally {
     btnReserva.disabled = false;
+  }
+}
+
+async function criarConta(event) {
+  event.preventDefault();
+
+  const btnCriarConta = document.getElementById("btn-criar-conta");
+  const mensagemCriarConta = document.getElementById("mensagem-criar-conta");
+
+  btnCriarConta.disabled = true;
+  mensagemCriarConta.textContent = "Processando cadastro...";
+  mensagemCriarConta.className = "text-yellow-500 text-center";
+
+  const username = document.getElementById("name").value;
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+  const telefone = document.getElementById("phone").value;
+
+  const users = {
+    data: {
+    username,
+    email,
+    password,
+    telefone,
+    },
+  };
+
+  try {
+    const response = await fetch(API_URL_USERS, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify(users),
+    });
+
+    const responseData = await response.json();
+    console.log("Resposta da API:", responseData);
+
+    if (!response.ok) {
+      throw new Error(responseData.error?.message || "Erro ao criar conta");
+    }
+
+    mensagemCriarConta.textContent = "Conta criada com sucesso!";
+    mensagemCriarConta.className = "text-green-500 text-center";
+    document.getElementById("criar-conta-form").reset();
+  } catch (error) {
+    console.error("Erro:", error);
+    mensagemCriarConta.textContent = "Erro ao criar conta. Tente novamente!";
+    mensagemCriarConta.className = "text-red-500 text-center";
+  } finally {
+    btnCriarConta.disabled = false;
   }
 }
