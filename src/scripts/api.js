@@ -69,30 +69,50 @@ async function criarConta(event) {
   const password = document.getElementById("password").value;
   const telefone = document.getElementById("phone").value;
 
-  const users = {
-    data: {
-    username,
-    email,
-    password,
-    telefone,
-    },
-  };
-
   try {
-    const response = await fetch(API_URL_USERS, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      body: JSON.stringify(users),
-    });
+    // 1️⃣ Criar conta sem telefone
+    const response = await fetch(
+      "http://localhost:1337/api/auth/local/register",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({ username, email, password }),
+      }
+    );
 
     const responseData = await response.json();
     console.log("Resposta da API:", responseData);
 
     if (!response.ok) {
       throw new Error(responseData.error?.message || "Erro ao criar conta");
+    }
+
+    // 2️⃣ Armazenar JWT no localStorage
+    const token = responseData.jwt;
+    if (!token) {
+      throw new Error("JWT não recebido. Verifique as permissões da API.");
+    }
+    localStorage.setItem("jwt", token); // 🔐 Salva o JWT para futuras requisições
+
+    // 3️⃣ Atualizar o telefone do usuário criado
+    const userId = responseData.user.id;
+    const updateResponse = await fetch(
+      `http://localhost:1337/api/users/${userId}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // 🔑 JWT na requisição
+        },
+        body: JSON.stringify({ telefone }),
+      }
+    );
+
+    if (!updateResponse.ok) {
+      throw new Error("Erro ao atualizar telefone.");
     }
 
     mensagemCriarConta.textContent = "Conta criada com sucesso!";
