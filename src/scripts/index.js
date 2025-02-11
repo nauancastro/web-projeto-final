@@ -2,11 +2,8 @@
 // INICIO FOOTER
 async function loadFooter() {
   try {
-    // Verifica se a página está na raiz ou dentro da pasta ./src/
-    const basePath = window.location.pathname.includes("/src/") ? ".." : ".";
-
-    // Caminho correto para carregar o footer
-    const response = await fetch(`${basePath}/src/components/footer.html`);
+    // Carrega o componente
+    const response = await fetch(`/src/components/footer.html`);
     const footerHTML = await response.text();
 
     // Insere o rodapé na página
@@ -21,11 +18,8 @@ loadFooter();
 // INICIO HEADER
 async function loadHeader() {
   try {
-    // Verifica se a página está na raiz ou dentro da pasta ./src/
-    const basePath = window.location.pathname.includes("/src") ? ".." : ".";
-
-    // Caminho correto para carregar o header
-    const response = await fetch(`${basePath}/src/components/header.html`);
+    // Carrega o componente
+    const response = await fetch(`/src/components/header.html`);
     const headerHTML = await response.text();
 
     // Insere o cabeçalho na página
