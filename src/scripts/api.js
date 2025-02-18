@@ -1,6 +1,7 @@
 const API_URL_RESERVA = "http://localhost:1337/api/reservas";
 const API_URL_USERS = "http://localhost:1337/api/users";
 
+// ---- FUNÇÃO CRIAR-RESERVA ----
 async function criarReserva(event) {
   event.preventDefault();
 
@@ -54,6 +55,7 @@ async function criarReserva(event) {
   }
 }
 
+// ---- FUNÇÃO CRIAR-CONTA ----
 async function criarConta(event) {
   event.preventDefault();
 
