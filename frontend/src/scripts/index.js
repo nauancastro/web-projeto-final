@@ -3,7 +3,7 @@
 async function loadFooter() {
   try {
     // Carrega o componente
-    const response = await fetch(`/src/components/footer.html`);
+    const response = await fetch(`/frontend/src/components/footer.html`);
     const footerHTML = await response.text();
 
     // Verifica se o elemento existe antes de definir o innerHTML
@@ -25,7 +25,7 @@ loadFooter();
 async function loadHeader() {
   try {
     // Carrega o componente
-    const response = await fetch(`/src/components/header.html`);
+    const response = await fetch(`/frontend/src/components/header.html`);
     const headerHTML = await response.text();
 
     // Verifica se o elemento existe antes de definir o innerHTML

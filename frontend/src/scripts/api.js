@@ -1,5 +1,6 @@
 const API_URL_RESERVA = "http://localhost:1337/api/reservas";
 const API_URL_USERS = "http://localhost:1337/api/users";
+const API_URL_AUTH = "http://localhost:1337/api/auth/local/register";
 
 // ---- FUNÇÃO CRIAR-RESERVA ----
 async function criarReserva(event) {
@@ -72,18 +73,15 @@ async function criarConta(event) {
   const telefone = document.getElementById("phone").value;
 
   try {
-    // 1️⃣ Criar conta sem telefone
-    const response = await fetch(
-      "http://localhost:1337/api/auth/local/register",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify({ username, email, password }),
-      }
-    );
+    // Criar conta (que não aceita telefone nativamente)
+    const response = await fetch(API_URL_AUTH, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({ username, email, password })
+    });
 
     const responseData = await response.json();
     console.log("Resposta da API:", responseData);
@@ -92,34 +90,35 @@ async function criarConta(event) {
       throw new Error(responseData.error?.message || "Erro ao criar conta");
     }
 
-    // 2️⃣ Armazenar JWT no localStorage
-    const token = responseData.jwt;
-    if (!token) {
-      throw new Error("JWT não recebido. Verifique as permissões da API.");
-    }
-    localStorage.setItem("jwt", token); // 🔐 Salva o JWT para futuras requisições
-
-    // 3️⃣ Atualizar o telefone do usuário criado
+    // Obter o id e o JWT do usuário criado
     const userId = responseData.user.id;
-    const updateResponse = await fetch(
-      `http://localhost:1337/api/users/${userId}`,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`, // 🔑 JWT na requisição
-        },
-        body: JSON.stringify({ telefone }),
-      }
-    );
+    const jwtToken = responseData.jwt;
+
+    // Tentar atualizar o telefone através do endpoint de usuário,
+    // enviando o token para autenticar a requisição
+    const updateResponse = await fetch(`${API_URL_USERS}/${userId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${jwtToken}`
+      },
+      body: JSON.stringify({ telefone: telefone.toString() }),
+    });
 
     if (!updateResponse.ok) {
-      throw new Error("Erro ao atualizar telefone.");
+      // Se a atualização falhar, deletar o usuário criado
+      await fetch(`${API_URL_USERS}/${userId}`, { method: "DELETE" });
+      throw new Error("Erro ao atualizar telefone. Conta removida.");
     }
 
     mensagemCriarConta.textContent = "Conta criada com sucesso!";
     mensagemCriarConta.className = "text-green-500 text-center";
     document.getElementById("criar-conta-form").reset();
+
+    // Redirecionar para a página de login
+    setTimeout(() => {
+      window.location.href = "/frontend/src/login.html";
+    }, 2000);
   } catch (error) {
     console.error("Erro:", error);
     mensagemCriarConta.textContent = "Erro ao criar conta. Tente novamente!";
