@@ -21,6 +21,23 @@ async function loadFooter() {
 loadFooter();
 // FIM FOOTER
 
+// Função para injetar o nome do usuário no cabeçalho se estiver logado
+function showUserInfo() {
+  const userDataString = localStorage.getItem("userData");
+  if (userDataString) {
+    const userData = JSON.parse(userDataString);
+    // Procura o container do header (carregado via loadHeader)
+    const headerContainer = document.getElementById("header-container");
+    if (headerContainer) {
+      // Cria um elemento para exibir o usuário
+      const userInfoDiv = document.createElement("div");
+      userInfoDiv.classList.add("absolute", "bottom-2", "right-4", "text-sm", "text-gray-400");
+      userInfoDiv.textContent = userData.username;
+      headerContainer.appendChild(userInfoDiv);
+    }
+  }
+}
+
 // INICIO HEADER
 async function loadHeader() {
   try {
@@ -32,6 +49,8 @@ async function loadHeader() {
     const headerContainer = document.getElementById("header-container");
     if (headerContainer) {
       headerContainer.innerHTML = headerHTML;
+      // Chama a função para mostrar as infos do usuário
+      showUserInfo();
     } else {
       console.error("Elemento header-container não encontrado.");
     }

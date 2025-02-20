@@ -1,6 +1,8 @@
 const API_URL_RESERVA = "http://localhost:1337/api/reservas";
 const API_URL_USERS = "http://localhost:1337/api/users";
 const API_URL_AUTH = "http://localhost:1337/api/auth/local/register";
+const API_URL_LOGIN = "http://localhost:1337/api/auth/local";
+const API_URL_ROLES = "http://localhost:1337/api/users-permissions/roles";
 
 // ---- FUNÇÃO CRIAR-RESERVA ----
 async function criarReserva(event) {
@@ -71,16 +73,17 @@ async function criarConta(event) {
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
   const telefone = document.getElementById("phone").value;
+  const roleEscolhida = "Cliente"; //document.getElementById("role").value; // Pegamos a role do formulário (Cliente ou Barbeiro)
 
   try {
-    // Criar conta (que não aceita telefone nativamente)
+    // Criar conta com role padrão (Authenticated)
     const response = await fetch(API_URL_AUTH, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
       },
-      body: JSON.stringify({ username, email, password })
+      body: JSON.stringify({ username, email, password }),
     });
 
     const responseData = await response.json();
@@ -94,28 +97,39 @@ async function criarConta(event) {
     const userId = responseData.user.id;
     const jwtToken = responseData.jwt;
 
-    // Tentar atualizar o telefone através do endpoint de usuário,
-    // enviando o token para autenticar a requisição
+    // Obter ID da Role selecionada (Cliente ou Barbeiro)
+    const rolesResponse = await fetch(API_URL_ROLES, {
+      headers: { Authorization: `Bearer ${jwtToken}` },
+    });
+
+    const rolesData = await rolesResponse.json();
+    const roleObj = rolesData.roles.find((r) => r.name === roleEscolhida);
+    
+    if (!roleObj) {
+      throw new Error("Role inválida selecionada!");
+    }
+
+    const roleId = roleObj.id;
+
+    // Atualizar usuário para a nova role
     const updateResponse = await fetch(`${API_URL_USERS}/${userId}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${jwtToken}`
+        Authorization: `Bearer ${jwtToken}`,
       },
-      body: JSON.stringify({ telefone: telefone.toString() }),
+      body: JSON.stringify({ telefone: telefone.toString(), role: roleId }),
     });
 
     if (!updateResponse.ok) {
-      // Se a atualização falhar, deletar o usuário criado
-      await fetch(`${API_URL_USERS}/${userId}`, { method: "DELETE" });
-      throw new Error("Erro ao atualizar telefone. Conta removida.");
+      throw new Error("Erro ao atualizar usuário com a role correta.");
     }
 
     mensagemCriarConta.textContent = "Conta criada com sucesso!";
     mensagemCriarConta.className = "text-green-500 text-center";
     document.getElementById("criar-conta-form").reset();
 
-    // Redirecionar para a página de login
+    // Redirecionar para login
     setTimeout(() => {
       window.location.href = "/frontend/src/login.html";
     }, 2000);
@@ -125,5 +139,84 @@ async function criarConta(event) {
     mensagemCriarConta.className = "text-red-500 text-center";
   } finally {
     btnCriarConta.disabled = false;
+  }
+}
+
+// ---- FUNÇÃO FAZER-LOGIN ----
+async function loginUsuario(event) {
+  event.preventDefault();
+
+  const btnLogin = document.getElementById("btn-login");
+  const mensagemLogin = document.getElementById("mensagem-login");
+
+  btnLogin.disabled = true;
+  mensagemLogin.textContent = "Processando login...";
+  mensagemLogin.className = "text-yellow-500 text-center";
+
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  try {
+    // Login para obter JWT
+    const response = await fetch(API_URL_LOGIN, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({ identifier: email, password }),
+    });
+
+    const loginData = await response.json();
+    console.log("Resposta do login:", loginData);
+
+    if (!response.ok) {
+      throw new Error(loginData.error?.message || "Erro ao fazer login");
+    }
+
+    const token = loginData.jwt;
+
+    // Obter informações completas do usuário
+    const meResponse = await fetch("http://localhost:1337/api/users/me?populate=role", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    const meData = await meResponse.json();
+    console.log("Usuário autenticado:", meData);
+
+    if (!meData.role || !meData.role.name) {
+      throw new Error("Usuário sem papel definido no banco de dados!");
+    }
+
+    const role = meData.role.name;
+
+    // Salvar no localStorage
+    const expiresAt = new Date().getTime() + 50 * 1000;
+    const userData = { token, expiresAt, username: meData.username, role };
+    localStorage.setItem("userData", JSON.stringify(userData));
+
+    mensagemLogin.textContent = "Login realizado com sucesso!";
+    mensagemLogin.className = "text-green-500 text-center";
+
+    // Redirecionamento baseado na role
+    setTimeout(() => {
+      if (role === "Cliente") {
+        window.location.href = "/frontend/src/reserva.html";
+      } else if (role === "Barbeiro") {
+        window.location.href = "/frontend/src/dashboard.html";
+      } else {
+        throw new Error("Usuário sem permissão para acessar esta área!");
+      }
+    }, 1000);
+  } catch (error) {
+    console.error("Erro:", error);
+    mensagemLogin.textContent =
+      error.message || "Erro ao fazer login. Tente novamente!";
+    mensagemLogin.className = "text-red-500 text-center";
+  } finally {
+    btnLogin.disabled = false;
   }
 }
