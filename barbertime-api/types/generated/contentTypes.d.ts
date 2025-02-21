@@ -401,6 +401,9 @@ export interface ApiReservaReserva extends Struct.CollectionTypeSchema {
     > &
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
+    servico: Schema.Attribute.Enumeration<
+      ['cortebarba', 'corte', 'barba', 'barboterapia']
+    >;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;

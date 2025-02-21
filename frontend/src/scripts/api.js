@@ -1,32 +1,90 @@
 const API_URL_RESERVA = "http://localhost:1337/api/reservas";
-const API_URL_USERS = "http://localhost:1337/api/users";
-const API_URL_AUTH = "http://localhost:1337/api/auth/local/register";
-const API_URL_LOGIN = "http://localhost:1337/api/auth/local";
-const API_URL_ROLES = "http://localhost:1337/api/users-permissions/roles";
+const API_URL_USERS   = "http://localhost:1337/api/users";
+const API_URL_AUTH    = "http://localhost:1337/api/auth/local/register";
+const API_URL_LOGIN   = "http://localhost:1337/api/auth/local";
 
-// ---- FUNÇÃO CRIAR-RESERVA ----
+// ------------------------------------------
+//  FUNÇÃO PARA BUSCAR BARBEIROS DINAMICAMENTE
+// ------------------------------------------
+async function buscarBarbeiros() {
+  // 1) Verifica se o usuário está autenticado
+  const userDataString = localStorage.getItem("userData");
+  if (!userDataString) {
+    throw new Error("Usuário não autenticado.");
+  }
+
+  // 2) Pega o token do localStorage
+  const userData = JSON.parse(userDataString);
+  const token = userData.token;
+
+  // 3) Faz a requisição para buscar somente usuários com role=Barbeiro
+  //    (Necessita que a role “Barbeiro” exista e que o usuário logado tenha permissão de find em /users 
+  //     OU que exista uma rota customizada no Strapi para retornar barbers)
+  const url = `${API_URL_USERS}?populate=role&filters[role][name][$eq]=Barbeiro`;
+
+  const response = await fetch(url, {
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error?.message || "Erro ao buscar barbeiros.");
+  }
+
+  const barbers = await response.json();
+  // Retorna o array de usuários que têm a role “Barbeiro”
+  return barbers; 
+}
+
+// ----------------------------------
+//  FUNÇÃO CRIAR-RESERVA (REFATORADA)
+// ----------------------------------
 async function criarReserva(event) {
   event.preventDefault();
 
-  const btnReserva = document.getElementById("btn-reserva");
-  const mensagemReserva = document.getElementById("mensagem-reserva");
+  const btnReserva       = document.getElementById("btn-reserva");
+  const mensagemReserva  = document.getElementById("mensagem-reserva");
 
   btnReserva.disabled = true;
   mensagemReserva.textContent = "Processando reserva...";
   mensagemReserva.className = "text-yellow-500 text-center";
 
-  const dia = document.getElementById("date").value;
-  let horario = document.getElementById("time").value;
+  // Verifica se o usuário está autenticado
+  const userDataString = localStorage.getItem("userData");
+  if (!userDataString) {
+    mensagemReserva.textContent = "Usuário não autenticado. Faça login para reservar.";
+    mensagemReserva.className = "text-red-500 text-center";
+    btnReserva.disabled = false;
+    return;
+  }
+  const userData = JSON.parse(userDataString);
+  const token = userData.token;
 
-  // Adicionando segundos e milissegundos ao horário
+  // Dados da reserva
+  const dia       = document.getElementById("date").value;
+  let horario     = document.getElementById("time").value;
+  const barberId  = document.getElementById("barber").value; // ID do barbeiro
+  const servico   = document.getElementById("service").value;
+
+  // Ajusta o horário no formato com segundos e milissegundos
   horario = `${horario}:00.000`;
 
-  const cliente = "Usuário Padrão";
-  const barbeiro = document.getElementById("barber").value;
-  const servico = document.getElementById("service").value;
+  // O campo “cliente” deve ser o ID do usuário logado
+  const clienteId = userData.id;
 
+  // Monta o objeto de reserva (Strapi formata no campo “data” por padrão)
   const reserva = {
-    data: { dia, horario, cliente, barbeiro, servico },
+    data: {
+      dia,
+      horario,
+      cliente: clienteId, // ID do cliente
+      barbeiro: barberId, // ID do barbeiro selecionado
+      servico,
+    },
   };
 
   try {
@@ -35,12 +93,13 @@ async function criarReserva(event) {
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(reserva),
     });
 
     const responseData = await response.json();
-    console.log("Resposta da API:", responseData);
+    console.log("Resposta da API (criarReserva):", responseData);
 
     if (!response.ok) {
       throw new Error(responseData.error?.message || "Erro ao criar reserva");
@@ -50,7 +109,7 @@ async function criarReserva(event) {
     mensagemReserva.className = "text-green-500 text-center";
     document.getElementById("reserva-form").reset();
   } catch (error) {
-    console.error("Erro:", error);
+    console.error("Erro ao criar reserva:", error);
     mensagemReserva.textContent = "Erro ao criar reserva. Tente novamente!";
     mensagemReserva.className = "text-red-500 text-center";
   } finally {
@@ -73,10 +132,9 @@ async function criarConta(event) {
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
   const telefone = document.getElementById("phone").value;
-  const roleEscolhida = "Cliente"; //document.getElementById("role").value; // Pegamos a role do formulário (Cliente ou Barbeiro)
 
   try {
-    // Criar conta com role padrão (Authenticated)
+    // Supondo que o backend atribua automaticamente a role "Cliente"
     const response = await fetch(API_URL_AUTH, {
       method: "POST",
       headers: {
@@ -93,43 +151,11 @@ async function criarConta(event) {
       throw new Error(responseData.error?.message || "Erro ao criar conta");
     }
 
-    // Obter o id e o JWT do usuário criado
-    const userId = responseData.user.id;
-    const jwtToken = responseData.jwt;
-
-    // Obter ID da Role selecionada (Cliente ou Barbeiro)
-    const rolesResponse = await fetch(API_URL_ROLES, {
-      headers: { Authorization: `Bearer ${jwtToken}` },
-    });
-
-    const rolesData = await rolesResponse.json();
-    const roleObj = rolesData.roles.find((r) => r.name === roleEscolhida);
-    
-    if (!roleObj) {
-      throw new Error("Role inválida selecionada!");
-    }
-
-    const roleId = roleObj.id;
-
-    // Atualizar usuário para a nova role
-    const updateResponse = await fetch(`${API_URL_USERS}/${userId}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${jwtToken}`,
-      },
-      body: JSON.stringify({ telefone: telefone.toString(), role: roleId }),
-    });
-
-    if (!updateResponse.ok) {
-      throw new Error("Erro ao atualizar usuário com a role correta.");
-    }
-
+    // Após o registro, nenhum update extra é necessário se o usuário já recebe a role correta
     mensagemCriarConta.textContent = "Conta criada com sucesso!";
     mensagemCriarConta.className = "text-green-500 text-center";
     document.getElementById("criar-conta-form").reset();
 
-    // Redirecionar para login
     setTimeout(() => {
       window.location.href = "/frontend/src/login.html";
     }, 2000);
@@ -157,7 +183,6 @@ async function loginUsuario(event) {
   const password = document.getElementById("password").value;
 
   try {
-    // Login para obter JWT
     const response = await fetch(API_URL_LOGIN, {
       method: "POST",
       headers: {
@@ -176,32 +201,26 @@ async function loginUsuario(event) {
 
     const token = loginData.jwt;
 
-    // Obter informações completas do usuário
     const meResponse = await fetch("http://localhost:1337/api/users/me?populate=role", {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
     });
-
     const meData = await meResponse.json();
     console.log("Usuário autenticado:", meData);
 
     if (!meData.role || !meData.role.name) {
       throw new Error("Usuário sem papel definido no banco de dados!");
     }
-
     const role = meData.role.name;
-
-    // Salvar no localStorage
     const expiresAt = new Date().getTime() + 50 * 1000;
-    const userData = { token, expiresAt, username: meData.username, role };
+    const userData = { token, expiresAt, id: meData.id, username: meData.username, role };
     localStorage.setItem("userData", JSON.stringify(userData));
 
     mensagemLogin.textContent = "Login realizado com sucesso!";
     mensagemLogin.className = "text-green-500 text-center";
 
-    // Redirecionamento baseado na role
     setTimeout(() => {
       if (role === "Cliente") {
         window.location.href = "/frontend/src/reserva.html";

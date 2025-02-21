@@ -3,24 +3,22 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BarberTime</title>
+    <title>BarberTime - Fazer Reserva</title>
     <link
       href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="/src/styles/output.css" />
+    <link rel="stylesheet" href="./styles/output.css" />
   </head>
   <body class="bg-black text-white">
     <div id="header-container"></div>
 
     <main
-      class="w-full h-screen bg-cover bg-center bg-opacity-50 relative"
-      style="background-image: url(&quot;./assets/bg.jpg&quot;)"
+      class="w-full min-h-screen bg-cover bg-center bg-opacity-50 relative"
+      style="background-image: url('./assets/bg.jpg')"
     >
       <div class="absolute inset-0 bg-black bg-opacity-70"></div>
-      <div
-        class="relative z-10 flex flex-col justify-center items-center h-full"
-      >
+      <div class="relative z-10 flex flex-col justify-center items-center h-full">
         <div
           class="bg-gray-900 p-6 rounded-lg shadow-lg w-11/12 max-w-md text-white"
         >
@@ -42,6 +40,7 @@
                 class="w-full border border-gray-700 rounded-lg px-3 py-2 bg-gray-800 text-white"
               />
             </div>
+
             <div>
               <label for="time" class="block font-medium mb-1">Horário</label>
               <input
@@ -52,9 +51,11 @@
                 class="w-full border border-gray-700 rounded-lg px-3 py-2 bg-gray-800 text-white"
               />
             </div>
+
+            <!-- SELETOR DE BARBEIROS (dinâmico) -->
             <div>
               <label for="barber" class="block font-medium mb-1"
-                >Barbeiro Selecionado</label
+                >Barbeiro</label
               >
               <select
                 id="barber"
@@ -62,10 +63,12 @@
                 required
                 class="w-full border border-gray-700 rounded-lg px-3 py-2 bg-gray-800 text-white"
               >
-                <option value="Barbeiro 1">Barbeiro 1</option>
-                <option value="Barbeiro 2">Barbeiro 2</option>
+                <!-- Options serão inseridos dinamicamente pelo JS -->
+                <option value="">Carregando barbeiros...</option>
               </select>
             </div>
+
+            <!-- SELETOR DE SERVIÇO -->
             <div>
               <label for="service" class="block font-medium mb-1"
                 >Tipo de Serviço</label
@@ -76,11 +79,13 @@
                 required
                 class="w-full border border-gray-700 rounded-lg px-3 py-2 bg-gray-800 text-white"
               >
-                <option value="Corte de cabelo">Corte de cabelo</option>
-                <option value="Barba">Barba</option>
-                <option value="Corte + Barba">Corte + Barba</option>
+                <option value="corte">Corte de cabelo</option>
+                <option value="barba">Barba</option>
+                <option value="cortebarba">Corte + Barba</option>
+                <option value="barboterapia">Barboterapia</option>
               </select>
             </div>
+
             <button
               type="submit"
               id="btn-reserva"
@@ -95,7 +100,39 @@
     </main>
 
     <div id="footer-container"></div>
-    <script src="/src/scripts/index.js"></script>
-    <script src="/src/scripts/api.js"></script>
+    
+    <!-- Scripts -->
+    <script src="./scripts/index.js"></script>
+    <script src="./scripts/api.js"></script>
+    <script>
+      // Ao carregar a página, buscar barbeiros e preencher o SELECT
+      window.addEventListener('DOMContentLoaded', async () => {
+        const barberSelect = document.getElementById('barber');
+        try {
+          const barbers = await buscarBarbeiros();
+
+          // Remove qualquer option anterior
+          barberSelect.innerHTML = '';
+
+          // Inserir um option inicial em branco (ou rótulo)
+          const defaultOption = document.createElement('option');
+          defaultOption.value = '';
+          defaultOption.textContent = 'Selecione um barbeiro';
+          barberSelect.appendChild(defaultOption);
+
+          // Para cada barbeiro retornado, cria uma option
+          barbers.forEach((barber) => {
+            const option = document.createElement('option');
+            option.value = barber.id;       // Armazena o ID do barbeiro
+            option.textContent = barber.username; // Exibe o username
+            barberSelect.appendChild(option);
+          });
+
+        } catch (error) {
+          console.error('Erro ao carregar barbeiros:', error);
+          barberSelect.innerHTML = '<option value="">Erro ao carregar barbeiros</option>';
+        }
+      });
+    </script>
   </body>
 </html>

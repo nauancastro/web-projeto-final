@@ -26,14 +26,9 @@ function showUserInfo() {
   const userDataString = localStorage.getItem("userData");
   if (userDataString) {
     const userData = JSON.parse(userDataString);
-    // Procura o container do header (carregado via loadHeader)
-    const headerContainer = document.getElementById("header-container");
-    if (headerContainer) {
-      // Cria um elemento para exibir o usuário
-      const userInfoDiv = document.createElement("div");
-      userInfoDiv.classList.add("absolute", "bottom-2", "right-4", "text-sm", "text-gray-400");
-      userInfoDiv.textContent = userData.username;
-      headerContainer.appendChild(userInfoDiv);
+    const userNameElement = document.getElementById("user-name");
+    if (userNameElement) {
+      userNameElement.textContent = userData.username;
     }
   }
 }
@@ -87,21 +82,4 @@ window.addEventListener("scroll", function () {
 
 function scrollToTop() {
   window.scrollTo({ top: 0, behavior: "smooth" });
-}
-
-// Verificar horário de funcionamento
-const horario = document.getElementById("horario-funcionamento");
-if (horario) {
-  const agora = new Date();
-  const horaAtual = agora.getHours();
-
-  if (horaAtual >= 9 && horaAtual <= 20) {
-    horario.classList.add("bg-green-500");
-    horario.textContent = "Estamos abertos! de 9h às 20h";
-  } else {
-    horario.classList.add("bg-red-500");
-    horario.textContent = "Estamos fechados! Aberto de 9h às 20h";
-  }
-} else {
-  console.error("Elemento horario-funcionamento não encontrado.");
 }

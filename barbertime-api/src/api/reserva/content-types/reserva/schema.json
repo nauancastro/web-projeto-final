@@ -29,6 +29,15 @@
       "relation": "manyToOne",
       "target": "plugin::users-permissions.user",
       "inversedBy": "reservas_barbeiro"
+    },
+    "servico": {
+      "type": "enumeration",
+      "enum": [
+        "cortebarba",
+        "corte",
+        "barba",
+        "barboterapia"
+      ]
     }
   }
 }
