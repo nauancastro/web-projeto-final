@@ -1,13 +1,13 @@
 const API_URL_RESERVA = "http://localhost:1337/api/reservas";
-const API_URL_USERS   = "http://localhost:1337/api/users";
-const API_URL_AUTH    = "http://localhost:1337/api/auth/local/register";
-const API_URL_LOGIN   = "http://localhost:1337/api/auth/local";
+const API_URL_USERS = "http://localhost:1337/api/users";
+const API_URL_AUTH = "http://localhost:1337/api/auth/local/register";
+const API_URL_LOGIN = "http://localhost:1337/api/auth/local";
+const API_URL_FIND_BY_BARBEIRO = "http://localhost:1337/api/find-by-barbeiro";
 
 // ------------------------------------------
-//  FUNÇÃO PARA BUSCAR RESERVAS DE UM BARBEIRO
+//  FUNÇÃO PARA BUSCAR RESERVAS DO BARBEIRO
 // ------------------------------------------
 async function buscarReservasDoBarbeiro() {
-  // Verifica se há dados do usuário logado
   const userDataString = localStorage.getItem("userData");
   if (!userDataString) {
     throw new Error("Usuário não autenticado.");
@@ -15,18 +15,12 @@ async function buscarReservasDoBarbeiro() {
 
   const userData = JSON.parse(userDataString);
   const token = userData.token;
-  const barberId = userData.id;
 
-  // Garantir que o usuário é um Barbeiro
   if (userData.role !== "Barbeiro") {
     throw new Error("Acesso negado. Você não é barbeiro!");
   }
 
-  // Monta URL com filtro e populate:
-  // Ex: /api/reservas?filters[barbeiro][$eq]=<barberId>&populate=cliente
-  const url = `${API_URL_RESERVA}?filters[barbeiro][id][$eq]=${barberId}&populate=cliente`;
-
-  const response = await fetch(url, {
+  const response = await fetch(API_URL_FIND_BY_BARBEIRO, {
     method: "GET",
     headers: {
       Accept: "application/json",
@@ -39,11 +33,10 @@ async function buscarReservasDoBarbeiro() {
     throw new Error(errorData.error?.message || "Erro ao buscar reservas.");
   }
 
-  // A resposta do Strapi vem no formato { data: [ ... ] }
   const responseData = await response.json();
 
-  // Retorna o array de reservas (responseData.data)
-  return responseData.data; 
+  // Retorna o objeto completo com "barbeiro" e "reservas"
+  return responseData;
 }
 
 // ------------------------------------------
@@ -61,7 +54,7 @@ async function buscarBarbeiros() {
   const token = userData.token;
 
   // 3) Faz a requisição para buscar somente usuários com role=Barbeiro
-  //    (Necessita que a role “Barbeiro” exista e que o usuário logado tenha permissão de find em /users 
+  //    (Necessita que a role “Barbeiro” exista e que o usuário logado tenha permissão de find em /users
   //     OU que exista uma rota customizada no Strapi para retornar barbers)
   const url = `${API_URL_USERS}?populate=role&filters[role][name][$eq]=Barbeiro`;
 
@@ -80,7 +73,7 @@ async function buscarBarbeiros() {
 
   const barbers = await response.json();
   // Retorna o array de usuários que têm a role “Barbeiro”
-  return barbers; 
+  return barbers;
 }
 
 // ----------------------------------
@@ -89,8 +82,8 @@ async function buscarBarbeiros() {
 async function criarReserva(event) {
   event.preventDefault();
 
-  const btnReserva       = document.getElementById("btn-reserva");
-  const mensagemReserva  = document.getElementById("mensagem-reserva");
+  const btnReserva = document.getElementById("btn-reserva");
+  const mensagemReserva = document.getElementById("mensagem-reserva");
 
   btnReserva.disabled = true;
   mensagemReserva.textContent = "Processando reserva...";
@@ -99,7 +92,8 @@ async function criarReserva(event) {
   // Verifica se o usuário está autenticado
   const userDataString = localStorage.getItem("userData");
   if (!userDataString) {
-    mensagemReserva.textContent = "Usuário não autenticado. Faça login para reservar.";
+    mensagemReserva.textContent =
+      "Usuário não autenticado. Faça login para reservar.";
     mensagemReserva.className = "text-red-500 text-center";
     btnReserva.disabled = false;
     return;
@@ -108,10 +102,10 @@ async function criarReserva(event) {
   const token = userData.token;
 
   // Dados da reserva
-  const dia       = document.getElementById("date").value;
-  let horario     = document.getElementById("time").value;
-  const barberId  = document.getElementById("barber").value; // ID do barbeiro
-  const servico   = document.getElementById("service").value;
+  const dia = document.getElementById("date").value;
+  let horario = document.getElementById("time").value;
+  const barberId = document.getElementById("barber").value; // ID do barbeiro
+  const servico = document.getElementById("service").value;
 
   // Ajusta o horário no formato com segundos e milissegundos
   horario = `${horario}:00.000`;
@@ -244,12 +238,15 @@ async function loginUsuario(event) {
 
     const token = loginData.jwt;
 
-    const meResponse = await fetch("http://localhost:1337/api/users/me?populate=role", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    });
+    const meResponse = await fetch(
+      "http://localhost:1337/api/users/me?populate=role",
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
     const meData = await meResponse.json();
     console.log("Usuário autenticado:", meData);
 
@@ -258,7 +255,13 @@ async function loginUsuario(event) {
     }
     const role = meData.role.name;
     const expiresAt = new Date().getTime() + 50 * 1000;
-    const userData = { token, expiresAt, id: meData.id, username: meData.username, role };
+    const userData = {
+      token,
+      expiresAt,
+      id: meData.id,
+      username: meData.username,
+      role,
+    };
     localStorage.setItem("userData", JSON.stringify(userData));
 
     mensagemLogin.textContent = "Login realizado com sucesso!";

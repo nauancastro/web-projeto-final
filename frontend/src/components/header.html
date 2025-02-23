@@ -1,60 +1,31 @@
-<nav class="bg-gray-900 py-4 shadow-lg w-full relative z-50">
+<nav class="bg-gray-900 py-4 w-full relative">
   <div class="container mx-auto flex items-center justify-between">
-    <!-- Área esquerda: Logo com margem à esquerda -->
-    <div class="flex items-center">
-      <a href="/frontend/index.html" class="text-white text-2xl font-bold ml-4">
-        BarberTime
-      </a>
-    </div>
-
-    <!-- Área central: Menu de navegação centralizado -->
-    <ul id="mobile-menu" class="hidden sm:flex sm:space-x-8">
-      <li>
-        <a href="#barbeiros" class="block text-gray-400 hover:text-white py-2">
-          Barbeiros
-        </a>
-      </li>
-      <li>
-        <a href="#servicos" class="block text-gray-400 hover:text-white py-2">
-          Serviços
-        </a>
-      </li>
-      <li>
-        <a href="/frontend/src/reserva.html" class="block text-gray-400 hover:text-white py-2">
-          Reservas
-        </a>
-      </li>
-      <li>
-        <a href="/frontend/src/login.html" class="block text-gray-400 hover:text-white py-2">
-          Login
-        </a>
-      </li>
+    <!-- Logo minimal -->
+    <a href="/frontend/index.html" class="text-white text-2xl font-bold ml-4">BarberTime</a>
+    <!-- Menu Desktop (apenas um link de exemplo) -->
+    <ul id="desktop-menu" class="hidden sm:flex space-x-4">
+      <li><a href="/frontend/index.html" class="text-gray-400 hover:text-white">Home</a></li>
     </ul>
-
-    <!-- Área direita: Informação do usuário e menu mobile -->
+    <!-- User Info + Botão Mobile -->
     <div class="flex items-center space-x-4 mr-4">
-      <!-- Container estilizado para exibir o nome com ícone -->
-      <div id="user-info" class="hidden sm:flex items-center px-3 py-1 bg-gray-800 rounded shadow text-white space-x-2">
-        <!-- Ícone de usuário -->
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-5 h-5 text-gray-400">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M5.121 17.804A13.937 13.937 0 0112 15c2.5 0 4.847.65 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0z" />
-        </svg>
-        <!-- Nome do usuário -->
-        <span class="text-sm" id="user-name"></span>
+      <div id="user-info" class="flex items-center px-3 py-1 bg-gray-800 rounded text-white">
+        <span id="user-name" class="ml-2"></span>
       </div>
-      <!-- Botão para mobile -->
-      <button class="block sm:hidden text-white text-3xl" onclick="toggleMenu()">
-        &#9776;
-      </button>
+      <button id="menu-btn" class="sm:hidden text-white text-3xl">☰</button>
     </div>
   </div>
 </nav>
-
-<button
-  id="back-to-top"
-  onclick="scrollToTop()"
-  class="hidden fixed bottom-5 right-5 bg-gray-700 text-white px-4 py-2 rounded-full shadow-lg hover:bg-gray-600"
->
-  ↑ Topo
-</button>
+<!-- Overlay do menu mobile -->
+<div id="menu-overlay" class="fixed inset-0 bg-black bg-opacity-50 hidden"></div>
+<!-- Menu Mobile -->
+<div id="mobile-menu" class="fixed top-0 right-0 w-4/5 h-full bg-gray-900 transform translate-x-full transition-transform duration-300">
+  <div class="flex justify-end p-4">
+    <button onclick="toggleMenu()" class="text-white text-2xl">&times;</button>
+  </div>
+  <div id="mobile-user-info" class="bg-gray-800 p-4 text-white">
+    <span id="mobile-user-name"></span>
+  </div>
+  <ul class="flex flex-col space-y-4 mt-4 px-4">
+    <li><a href="/frontend/index.html" class="text-white hover:text-gray-300">Home</a></li>
+  </ul>
+</div>

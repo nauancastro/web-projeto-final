@@ -12,7 +12,9 @@
   </head>
   <body class="bg-black text-white">
     <!-- Cabeçalho -->
-    <header class="bg-gray-900 text-white py-4 flex justify-between items-center px-6">
+    <header
+      class="bg-gray-900 text-white py-4 flex justify-between items-center px-6"
+    >
       <div class="flex items-center space-x-4">
         <img
           src="./assets/logo.webp"
@@ -32,7 +34,9 @@
     <!-- Conteúdo principal -->
     <main class="container mx-auto px-4 py-8">
       <h2 class="text-2xl font-bold text-center mb-6">Reservas Agendadas</h2>
-      <div class="bg-gray-900 p-6 rounded-lg shadow-lg w-full max-w-4xl mx-auto">
+      <div
+        class="bg-gray-900 p-6 rounded-lg shadow-lg w-full max-w-4xl mx-auto"
+      >
         <table class="w-full border-collapse border border-gray-700">
           <thead>
             <tr class="bg-gray-800 text-white">
@@ -58,86 +62,81 @@
     <script>
       // Função para deslogar (opcional)
       function logout() {
-        localStorage.removeItem('userData');
-        window.location.href = '/frontend/src/login.html';
+        localStorage.removeItem("userData");
+        window.location.href = "/frontend/src/login.html";
       }
 
       // Carregar as reservas ao iniciar a página
-      window.addEventListener('DOMContentLoaded', async () => {
-        const reservationsBody = document.getElementById('reservations-list');
-        const mensagemDash = document.getElementById('mensagem-dashboard');
+      window.addEventListener("DOMContentLoaded", async () => {
+        const reservationsBody = document.getElementById("reservations-list");
+        const mensagemDash = document.getElementById("mensagem-dashboard");
 
         try {
           // Buscar as reservas do barbeiro logado
-          const reservas = await buscarReservasDoBarbeiro();
+          const response = await buscarReservasDoBarbeiro();
 
           // Se não houver reservas, exibe mensagem
-          if (!reservas || reservas.length === 0) {
-            mensagemDash.textContent = 'Não há reservas agendadas.';
-            mensagemDash.className = 'text-center text-yellow-500 mt-4';
+          if (!response || response.reservas.length === 0) {
+            mensagemDash.textContent = "Não há reservas agendadas.";
+            mensagemDash.className = "text-center text-yellow-500 mt-4";
             return;
           }
 
           // Limpa o corpo da tabela
-          reservationsBody.innerHTML = '';
+          reservationsBody.innerHTML = "";
 
           // Monta cada linha da tabela
-          reservas.forEach((reserva) => {
-            // Estrutura do Strapi: reserva.attributes.[campo]
-            const { dia, horario, servico, cliente } = reserva.attributes;
+          response.reservas.forEach((reserva) => {
+            const { dia, horario, servico, cliente } = reserva;
 
-            // Para acessar os dados do cliente, é cliente.data.attributes
-            let nomeCliente = 'Desconhecido';
-            let telefoneCliente = 'N/A';
-            if (cliente && cliente.data && cliente.data.attributes) {
-              nomeCliente = cliente.data.attributes.username;
-              telefoneCliente = cliente.data.attributes.telefone || 'N/A';
+            // Cliente pode ser `null`, então tratamos o caso
+            let nomeCliente = "Desconhecido";
+            let telefoneCliente = "N/A";
+            if (cliente) {
+              nomeCliente = cliente.nome;
+              telefoneCliente = cliente.telefone || "N/A";
             }
 
             // Cria o elemento <tr>
-            const row = document.createElement('tr');
+            const row = document.createElement("tr");
             row.innerHTML = `
-              <td class="border border-gray-700 px-4 py-2 text-center">${formatarData(dia)}</td>
-              <td class="border border-gray-700 px-4 py-2 text-center">${formatarHorario(horario)}</td>
-              <td class="border border-gray-700 px-4 py-2 text-center">${nomeCliente}</td>
-              <td class="border border-gray-700 px-4 py-2 text-center">${telefoneCliente}</td>
-              <td class="border border-gray-700 px-4 py-2 text-center">${formatarServico(servico)}</td>
-            `;
+          <td class="border border-gray-700 px-4 py-2 text-center">${formatarData(dia)}</td>
+          <td class="border border-gray-700 px-4 py-2 text-center">${formatarHorario(horario)}</td>
+          <td class="border border-gray-700 px-4 py-2 text-center">${nomeCliente}</td>
+          <td class="border border-gray-700 px-4 py-2 text-center">${telefoneCliente}</td>
+          <td class="border border-gray-700 px-4 py-2 text-center">${formatarServico(servico)}</td>
+        `;
             reservationsBody.appendChild(row);
           });
         } catch (err) {
-          console.error('Erro ao carregar reservas do barbeiro:', err);
-          mensagemDash.textContent = err.message || 'Erro ao carregar reservas.';
-          mensagemDash.className = 'text-center text-red-500 mt-4';
+          console.error("Erro ao carregar reservas do barbeiro:", err);
+          mensagemDash.textContent =
+            err.message || "Erro ao carregar reservas.";
+          mensagemDash.className = "text-center text-red-500 mt-4";
         }
       });
 
-      // Funções auxiliares para formatação
       function formatarData(dia) {
-        // Ex: '2025-02-19'
-        // Ajustar se necessário
-        if (!dia) return '';
-        const [ano, mes, diaNum] = dia.split('-');
+        if (!dia) return "";
+        const [ano, mes, diaNum] = dia.split("-");
         return `${diaNum}/${mes}/${ano}`;
       }
 
       function formatarHorario(horario) {
-        // Ex: '14:00:00.000'
-        if (!horario) return '';
+        if (!horario) return "";
         return horario.slice(0, 5); // '14:00'
       }
 
       function formatarServico(servico) {
-        // Caso queira exibir de forma amigável
         switch (servico) {
-          case 'corte':
-            return 'Corte de Cabelo';
-          case 'barba':
-            return 'Barba';
-          case 'cortebarba':
-            return 'Corte + Barba';
-          case 'barboterapia':
-            return 'Barboterapia';
+          case "corte":
+            return "Corte de Cabelo";
+          case "barba":
+            return "Barba";
+          case "cortebarba":
+            return "Corte + Barba";
+          case "barboterapia":
+            return "Barboterapia";
           default:
             return servico;
         }

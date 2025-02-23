@@ -1,7 +1,9 @@
-/**
- * reserva router
- */
-
-import { factories } from "@strapi/strapi";
-
-export default factories.createCoreRouter("api::reserva.reserva");
+export default {
+  routes: [
+    {
+      method: 'GET',
+      path: '/find-by-barbeiro',
+      handler: 'reserva.findByBarbeiro',
+      }
+  ]
+}

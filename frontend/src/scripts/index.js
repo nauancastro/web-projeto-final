@@ -1,4 +1,3 @@
-// -------INÍCIO-COMPONENTES-------
 // INICIO FOOTER
 async function loadFooter() {
   try {
@@ -19,56 +18,63 @@ async function loadFooter() {
 }
 // Chama a função para carregar o rodapé
 loadFooter();
-// FIM FOOTER
 
-// Função para injetar o nome do usuário no cabeçalho se estiver logado
-function showUserInfo() {
-  const userDataString = localStorage.getItem("userData");
-  if (userDataString) {
-    const userData = JSON.parse(userDataString);
-    const userNameElement = document.getElementById("user-name");
-    if (userNameElement) {
-      userNameElement.textContent = userData.username;
-    }
-  }
-}
+document.addEventListener("DOMContentLoaded", () => {
+  carregarHeader();
 
-// INICIO HEADER
-async function loadHeader() {
-  try {
-    // Carrega o componente
-    const response = await fetch(`/frontend/src/components/header.html`);
-    const headerHTML = await response.text();
-
-    // Verifica se o elemento existe antes de definir o innerHTML
+  function carregarHeader() {
     const headerContainer = document.getElementById("header-container");
-    if (headerContainer) {
-      headerContainer.innerHTML = headerHTML;
-      // Chama a função para mostrar as infos do usuário
-      showUserInfo();
-    } else {
-      console.error("Elemento header-container não encontrado.");
+    if (!headerContainer) return;
+    fetch("/frontend/src/components/header.html")
+      .then((res) => res.text())
+      .then((html) => {
+        headerContainer.innerHTML = html;
+        configurarMenu();
+        carregarUserInfo();
+      })
+      .catch((err) => console.error("Erro ao carregar cabeçalho:", err));
+  }
+
+  function configurarMenu() {
+    const menuBtn = document.getElementById("menu-btn");
+    const mobileMenu = document.getElementById("mobile-menu");
+    const menuOverlay = document.getElementById("menu-overlay");
+    if (!menuBtn || !mobileMenu || !menuOverlay) return;
+
+    menuBtn.onclick = toggleMenu;
+    menuOverlay.onclick = toggleMenu;
+  }
+
+  window.toggleMenu = function toggleMenu() {
+    const mobileMenu = document.getElementById("mobile-menu");
+    const menuOverlay = document.getElementById("menu-overlay");
+    if (!mobileMenu || !menuOverlay) return;
+    const aberto = !mobileMenu.classList.contains("translate-x-full");
+    mobileMenu.classList.toggle("translate-x-full", aberto);
+    menuOverlay.classList.toggle("hidden", aberto);
+  };
+
+  function carregarUserInfo() {
+    const userDataString = localStorage.getItem("userData");
+    const userInfo = document.getElementById("user-info");
+    const userName = document.getElementById("user-name");
+    const mobileUserInfo = document.getElementById("mobile-user-info");
+    const mobileUserName = document.getElementById("mobile-user-name");
+
+    if (!userDataString) {
+      if (userInfo) userInfo.classList.add("hidden");
+      if (mobileUserInfo) mobileUserInfo.classList.add("hidden");
+      return;
     }
-  } catch (error) {
-    console.error("Erro ao carregar o cabeçalho:", error);
+    const userData = JSON.parse(userDataString);
+    if (userName) userName.textContent = userData.username;
+    if (mobileUserName) mobileUserName.textContent = userData.username;
+    if (userInfo) userInfo.classList.remove("hidden");
+    if (mobileUserInfo) mobileUserInfo.classList.remove("hidden");
   }
-}
-// Chama a função para carregar o header
-loadHeader();
-// FIM HEADER
-// -------FIM-COMPONENTES----------
+});
 
-// Função para abrir e fechar o menu mobile
-function toggleMenu() {
-  const mobileMenu = document.getElementById("mobile-menu");
-  if (mobileMenu) {
-    mobileMenu.classList.toggle("hidden");
-  } else {
-    console.error("Elemento mobile-menu não encontrado.");
-  }
-}
-
-// Back to top button
+// Botão de “voltar ao topo”
 window.addEventListener("scroll", function () {
   const button = document.getElementById("back-to-top");
   if (button) {
