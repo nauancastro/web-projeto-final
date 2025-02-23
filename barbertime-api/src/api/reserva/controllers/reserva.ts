@@ -7,7 +7,7 @@ import { factories } from "@strapi/strapi";
 export default factories.createCoreController("api::reserva.reserva", ({ strapi }) => ({
   async findByBarbeiro(ctx) {
     try {
-      const user = ctx.state.user; // Obtém o usuário autenticado
+      const user = ctx.state.user;
 
       if (!user) {
         return ctx.unauthorized("Você precisa estar autenticado.");
@@ -17,7 +17,6 @@ export default factories.createCoreController("api::reserva.reserva", ({ strapi 
         return ctx.forbidden("Apenas barbeiros podem acessar esta informação.");
       }
 
-      // Busca as reservas associadas ao barbeiro autenticado
       const reservas = await strapi.entityService.findMany("api::reserva.reserva", {
         filters: { barbeiro: user.id },
         populate: { cliente: true }, // Inclui os dados do cliente na resposta
