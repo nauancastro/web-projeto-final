@@ -4,6 +4,49 @@ const API_URL_AUTH    = "http://localhost:1337/api/auth/local/register";
 const API_URL_LOGIN   = "http://localhost:1337/api/auth/local";
 
 // ------------------------------------------
+//  FUNÇÃO PARA BUSCAR RESERVAS DE UM BARBEIRO
+// ------------------------------------------
+async function buscarReservasDoBarbeiro() {
+  // Verifica se há dados do usuário logado
+  const userDataString = localStorage.getItem("userData");
+  if (!userDataString) {
+    throw new Error("Usuário não autenticado.");
+  }
+
+  const userData = JSON.parse(userDataString);
+  const token = userData.token;
+  const barberId = userData.id;
+
+  // Garantir que o usuário é um Barbeiro
+  if (userData.role !== "Barbeiro") {
+    throw new Error("Acesso negado. Você não é barbeiro!");
+  }
+
+  // Monta URL com filtro e populate:
+  // Ex: /api/reservas?filters[barbeiro][$eq]=<barberId>&populate=cliente
+  const url = `${API_URL_RESERVA}?filters[barbeiro][id][$eq]=${barberId}&populate=cliente`;
+
+  const response = await fetch(url, {
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error?.message || "Erro ao buscar reservas.");
+  }
+
+  // A resposta do Strapi vem no formato { data: [ ... ] }
+  const responseData = await response.json();
+
+  // Retorna o array de reservas (responseData.data)
+  return responseData.data; 
+}
+
+// ------------------------------------------
 //  FUNÇÃO PARA BUSCAR BARBEIROS DINAMICAMENTE
 // ------------------------------------------
 async function buscarBarbeiros() {
