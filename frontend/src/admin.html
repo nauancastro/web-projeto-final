@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - BarberTime</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles/output.css" />
+  </head>
+  <body class="bg-black text-white">
+    <!-- Cabeçalho -->
+    <div id="header-container" class="w-full"></div>
+    <!-- Conteúdo principal -->
+    <main class="container mx-auto px-4 py-8">
+      <h2 class="text-2xl font-bold text-center mb-6">Dashboard Admin - Usuários</h2>
+      <div class="bg-gray-900 p-6 rounded-lg shadow-lg w-full max-w-6xl mx-auto overflow-x-auto">
+        <table class="w-full border-collapse border border-gray-700">
+          <thead>
+            <tr class="bg-gray-800 text-white">
+              <th class="border border-gray-700 px-2 py-2">ID</th>
+              <th class="border border-gray-700 px-2 py-2">Username</th>
+              <th class="border border-gray-700 px-2 py-2">Email</th>
+              <th class="border border-gray-700 px-2 py-2">Telefone</th>
+              <th class="border border-gray-700 px-2 py-2">Role</th>
+              <th class="border border-gray-700 px-2 py-2">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="users-table-body">
+            <!-- Usuários serão injetados dinamicamente -->
+          </tbody>
+        </table>
+        <p id="mensagem-admin" class="text-center mt-4"></p>
+      </div>
+    </main>
+    <div id="footer-container" class="w-full"></div>
+    <!-- Scripts -->
+    <script src="./scripts/index.js"></script>
+    <script src="./scripts/api.js"></script>
+    <script src="./scripts/admin.js"></script>
+    <!-- Edit User Modal -->
+    <div id="edit-user-modal" class="fixed inset-0 flex items-center justify-center bg-gray-700 bg-opacity-75 hidden">
+      <div class="bg-gray-900 text-white p-4 rounded w-80">
+        <h3 class="text-lg font-bold mb-4">Editar Usuário</h3>
+        <form id="edit-user-form">
+          <input type="hidden" id="edit-user-id">
+          <div class="mb-2">
+            <label for="edit-username" class="block text-sm font-medium">Username:</label>
+            <input type="text" id="edit-username" class="border bg-gray-800 text-white w-full p-1">
+          </div>
+          <div class="mb-2">
+            <label for="edit-email" class="block text-sm font-medium">Email:</label>
+            <input type="email" id="edit-email" class="border bg-gray-800 text-white w-full p-1">
+          </div>
+          <div class="mb-2">
+            <label for="edit-telefone" class="block text-sm font-medium">Telefone:</label>
+            <input type="text" id="edit-telefone" class="border bg-gray-800 text-white w-full p-1">
+          </div>
+          <div class="flex justify-end space-x-2 mt-4">
+            <button type="button" id="cancel-edit-user" class="bg-red-500 hover:bg-red-400 text-white py-1 px-3 rounded">Cancelar</button>
+            <button type="submit" class="bg-blue-500 hover:bg-blue-400 text-white py-1 px-3 rounded">Salvar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </body>
+</html>

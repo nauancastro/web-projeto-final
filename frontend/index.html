@@ -51,11 +51,12 @@
           Para fazer uma reserva ou consultar reservas atuais, faça login no
           sistema.
         </p>
-        <a
-          href="./src/login.html"
+        <button
+          id="btn-check-login"
           class="bg-green-500 text-white px-6 py-2 rounded-lg shadow-md hover:bg-green-600"
-          >Fazer Login</a
         >
+          Fazer Login
+        </button>
       </div>
     </section>
 
@@ -135,6 +136,7 @@
     <div id="footer-container"></div>
 
     <script src="./src/scripts/index.js"></script>
+    <script src="./src/scripts/api.js"></script>
     <script>
       // Verificar horário de funcionamento
       const horario = document.getElementById("horario-funcionamento");

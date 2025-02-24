@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<!-- ...existing head or references if needed... -->
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Minhas Reservas - BarberTime</title>
+  <link
+    href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="./styles/output.css" />
+</head>
+<body class="bg-black text-white flex flex-col min-h-screen">
+  <!-- Cabeçalho -->
+  <div id="header-container" class="w-full"></div>
+  <!-- Conteúdo principal -->
+  <main class="container mx-auto px-4 py-8 flex-grow">
+    <h2 class="text-2xl font-bold text-center mb-6">Minhas Reservas</h2>
+    <!-- New element for client info -->
+    <div id="cliente-info" class="text-center text-lg mb-4"></div>
+    <div class="bg-gray-900 p-6 rounded-lg shadow-lg w-full max-w-4xl mx-auto">
+      <table class="w-full border-collapse border border-gray-700">
+        <thead>
+          <tr class="bg-gray-800 text-white">
+            <th class="border border-gray-700 px-4 py-2">Data</th>
+            <th class="border border-gray-700 px-4 py-2">Horário</th>
+            <th class="border border-gray-700 px-4 py-2">Barbeiro</th>
+            <th class="border border-gray-700 px-4 py-2">Serviço</th>
+            <th class="border border-gray-700 px-4 py-2">Ações</th>
+          </tr>
+        </thead>
+        <tbody id="reservas-cliente-corpo">
+          <!-- Linhas serão injetadas dinamicamente -->
+        </tbody>
+      </table>
+      <p id="mensagem-minhas-reservas" class="text-center mt-4"></p>
+    </div>
+  </main>
+  <!-- Modal para editar reserva -->
+  <div id="edit-reserva-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden justify-center items-center">
+    <div class="bg-gray-800 p-6 rounded-lg">
+      <form id="edit-reserva-form">
+        <input type="hidden" id="edit-reserva-id" />
+        <div class="mb-4">
+          <label for="edit-date" class="block mb-1">Data:</label>
+          <input type="date" id="edit-date" required class="p-1 rounded bg-gray-700" />
+        </div>
+        <div class="mb-4">
+          <label for="edit-time" class="block mb-1">Horário:</label>
+          <input type="time" id="edit-time" required class="p-1 rounded bg-gray-700" />
+        </div>
+        <div class="flex justify-end">
+          <button type="button" id="cancel-edit" class="mr-2 p-1 bg-red-500 rounded">Cancelar</button>
+          <button type="submit" class="p-1 bg-green-500 rounded">Salvar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <div id="footer-container" class="w-full"></div>
+  <!-- Scripts -->
+  <script src="./scripts/index.js"></script>
+  <script src="./scripts/api.js"></script>
+  <script src="./scripts/validation.js"></script>
+  <script>
+    // Update edit reservation logic to use shared validation function
+    document.getElementById("edit-reserva-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const date = document.getElementById("edit-date").value;
+      const time = document.getElementById("edit-time").value;
+      const error = validateReservationDateTime(date, time);
+      if (error) {
+        alert(error);
+        return;
+      }
+      const identifier = document.getElementById("edit-reserva-id").value;
+      const horario = `${time}:00.000`;
+      try {
+        await editarReserva(identifier, date, horario);
+        alert("Reserva atualizada com sucesso!");
+        location.reload();
+      } catch (error) {
+        alert(error.message);
+      }
+    });
+    
+    document.getElementById("cancel-edit").addEventListener("click", () => {
+      document.getElementById("edit-reserva-modal").classList.add("hidden");
+    });
+
+    // Dentro do script, na função carregarReservasDoCliente, atualize o loop para cada reserva:
+    async function carregarReservasDoCliente() {
+      const reservasBody = document.getElementById("reservas-cliente-corpo");
+      const mensagem = document.getElementById("mensagem-minhas-reservas");
+      const clienteInfo = document.getElementById("cliente-info");
+      if (!reservasBody || !mensagem) return;
+    
+      try {
+        const data = await buscarReservasDoCliente();
+        if (data.cliente) {
+          clienteInfo.textContent = `Reservas de ${data.cliente.nome}`;
+        }
+        const reservas = data.reservas || data.data || [];
+        if (!reservas.length) {
+          mensagem.textContent = "Você não possui reservas.";
+          mensagem.className = "text-center text-yellow-500";
+          return;
+        }
+        reservasBody.innerHTML = "";
+        reservas.forEach((item) => {
+          const rec = item.attributes || item;
+          const identifier = rec.documentId;
+          const dia = rec.dia;
+          const horario = rec.horario;
+          const servico = rec.servico;
+          const barbeiroName = rec.barbeiro 
+             ? (rec.barbeiro.data?.attributes?.username || rec.barbeiro.nome || "N/A")
+             : "N/A";
+          const editButton = document.createElement("button");
+          editButton.className = "edit-btn p-1 bg-blue-500 rounded";
+          if (identifier) {
+            editButton.setAttribute("data-identifier", identifier);
+            editButton.setAttribute("data-date", dia);
+            editButton.setAttribute("data-time", horario);
+            editButton.textContent = "Editar";
+          } else {
+            editButton.textContent = "Não editável";
+            editButton.disabled = true;
+          }
+          // Novo: cria o botão de excluir
+          const deleteButton = document.createElement("button");
+          deleteButton.className = "delete-btn p-1 bg-red-500 rounded ml-2";
+          if (identifier) {
+            deleteButton.setAttribute("data-identifier", identifier);
+            deleteButton.textContent = "Excluir";
+          }
+    
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td class="border border-gray-700 px-4 py-2 text-center">${formatarData(dia)}</td>
+            <td class="border border-gray-700 px-4 py-2 text-center">${formatarHorario(horario)}</td>
+            <td class="border border-gray-700 px-4 py-2 text-center">${barbeiroName}</td>
+            <td class="border border-gray-700 px-4 py-2 text-center">${formatarServico(servico)}</td>
+            <td class="border border-gray-700 px-4 py-2 text-center"></td>
+          `;
+          // Adiciona o botão de editar e excluir na última célula
+          const actionCell = tr.querySelector("td:last-child");
+          actionCell.appendChild(editButton);
+          actionCell.appendChild(deleteButton);
+          reservasBody.appendChild(tr);
+        });
+      } catch (err) {
+        mensagem.textContent = err.message || "Erro ao carregar reservas.";
+        mensagem.className = "text-center text-red-500";
+      }
+    }
+
+    // Chama a função uma única vez
+    carregarReservasDoCliente();
+
+    // Listener para deleção usando delegação (único listener)
+    document.getElementById("reservas-cliente-corpo").addEventListener("click", async (e) => {
+      if (e.target.classList.contains("delete-btn")) {
+        const identifier = e.target.getAttribute("data-identifier");
+        if (!confirm("Deseja realmente excluir esta reserva?")) return;
+        try {
+          await deletarReserva(identifier);
+          alert("Reserva deletada com sucesso!");
+          location.reload();
+        } catch (error) {
+          alert(error.message);
+        }
+      }
+    });
+  </script>
+</body>
+</html>

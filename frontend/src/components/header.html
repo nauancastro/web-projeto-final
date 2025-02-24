@@ -1,18 +1,40 @@
-<nav class="bg-gray-900 py-4 w-full relative">
-  <div class="container mx-auto flex items-center justify-between">
-    <!-- Logo minimal -->
-    <a href="/frontend/index.html" class="text-white text-2xl font-bold ml-4">BarberTime</a>
-    <!-- Menu Desktop (apenas um link de exemplo) -->
-    <ul id="desktop-menu" class="hidden sm:flex space-x-4">
-      <li><a href="/frontend/index.html" class="text-gray-400 hover:text-white">Home</a></li>
-    </ul>
-    <!-- User Info + Botão Mobile -->
-    <div class="flex items-center space-x-4 mr-4">
-      <div id="user-info" class="flex items-center px-3 py-1 bg-gray-800 rounded text-white">
-        <span id="user-name" class="ml-2"></span>
-      </div>
-      <button id="menu-btn" class="sm:hidden text-white text-3xl">☰</button>
+<nav class="relative w-full bg-gray-900 h-16">
+  <!-- BarberTime à esquerda -->
+  <a
+    href="/frontend/index.html"
+    class="absolute left-4 top-1/2 transform -translate-y-1/2 text-white text-2xl font-bold"
+  >
+    BarberTime
+  </a>
+  <!-- Menu Desktop (Home) central -->
+  <ul
+    id="desktop-menu"
+    class="hidden sm:flex space-x-4 absolute inset-0 justify-center items-center"
+  >
+    <li>
+      <a href="/frontend/index.html" class="text-gray-400 hover:text-white">
+        Home
+      </a>
+    </li>
+    <li id="menu-reservas" style="display: none;">
+      <a href="/frontend/src/minhas_reservas.html" class="text-gray-400 hover:text-white">Minhas Reservas</a>
+    </li>
+  </ul>
+  <!-- User Info + Botão Mobile à direita -->
+  <div
+    class="absolute right-4 top-1/2 transform -translate-y-1/2 flex items-center space-x-4"
+  >
+    <div
+      id="user-info"
+      class="flex items-center px-3 py-1 bg-gray-800 rounded text-white space-x-2"
+    >
+      <!-- Elementos para usuário logado -->
+      <span id="user-text" class="hidden">Logado como: <span id="user-name" class="ml-2"></span></span>
+      <button onclick="logout()" id="logout-btn" class="ml-2 text-sm underline hidden">Deslogar</button>
+      <!-- Link para fazer login -->
+      <a href="/frontend/src/login.html" id="login-link" class="text-white">Fazer Login</a>
     </div>
+    <button id="menu-btn" class="sm:hidden text-white text-3xl">☰</button>
   </div>
 </nav>
 <!-- Overlay do menu mobile -->
@@ -23,9 +45,16 @@
     <button onclick="toggleMenu()" class="text-white text-2xl">&times;</button>
   </div>
   <div id="mobile-user-info" class="bg-gray-800 p-4 text-white">
-    <span id="mobile-user-name"></span>
+    <!-- Elementos para usuário logado -->
+    <p id="mobile-user-text" class="hidden">Logado como: <span id="mobile-user-name"></span></p>
+    <button onclick="logout()" id="mobile-logout-btn" class="text-sm underline mt-2 hidden">Deslogar</button>
+    <!-- Link para fazer login -->
+    <a href="/frontend/src/login.html" id="mobile-login-link" class="text-white">Fazer Login</a>
   </div>
   <ul class="flex flex-col space-y-4 mt-4 px-4">
     <li><a href="/frontend/index.html" class="text-white hover:text-gray-300">Home</a></li>
+    <li id="mobile-menu-reservas" style="display: none;">
+      <a href="/frontend/src/minhas_reservas.html" class="text-white hover:text-gray-300">Minhas Reservas</a>
+    </li>
   </ul>
 </div>

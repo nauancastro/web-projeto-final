@@ -3,6 +3,13 @@ const API_URL_USERS = "http://localhost:1337/api/users";
 const API_URL_AUTH = "http://localhost:1337/api/auth/local/register";
 const API_URL_LOGIN = "http://localhost:1337/api/auth/local";
 const API_URL_FIND_BY_BARBEIRO = "http://localhost:1337/api/find-by-barbeiro";
+const API_URL_FIND_BY_CLIENTE = "http://localhost:1337/api/find-by-cliente";
+
+// FUNÇÃO DE LOGOUT
+function logout() {
+  localStorage.removeItem("userData");
+  window.location.href = "/frontend/src/login.html";
+}
 
 // ------------------------------------------
 //  FUNÇÃO PARA BUSCAR RESERVAS DO BARBEIRO
@@ -36,6 +43,34 @@ async function buscarReservasDoBarbeiro() {
   const responseData = await response.json();
 
   // Retorna o objeto completo com "barbeiro" e "reservas"
+  return responseData;
+}
+
+// ------------------------------------------
+//  FUNÇÃO PARA BUSCAR RESERVAS DO CLIENTE
+// ------------------------------------------
+async function buscarReservasDoCliente() {
+  const userDataString = localStorage.getItem("userData");
+  if (!userDataString) {
+    throw new Error("Usuário não autenticado.");
+  }
+  const userData = JSON.parse(userDataString);
+  const token = userData.token;
+
+  const response = await fetch(API_URL_FIND_BY_CLIENTE, {
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error?.message || "Erro ao buscar reservas.");
+  }
+  const responseData = await response.json();
+  // Retorna o objeto com "cliente" e "reservas"
   return responseData;
 }
 
@@ -272,6 +307,8 @@ async function loginUsuario(event) {
         window.location.href = "/frontend/src/reserva.html";
       } else if (role === "Barbeiro") {
         window.location.href = "/frontend/src/dashboard.html";
+      } else if (role === "Admin") { // nova condição para Admin
+        window.location.href = "/frontend/src/admin.html";
       } else {
         throw new Error("Usuário sem permissão para acessar esta área!");
       }
@@ -284,4 +321,173 @@ async function loginUsuario(event) {
   } finally {
     btnLogin.disabled = false;
   }
+}
+
+// New function to fetch all users with their roles and telefone, etc.
+async function buscarTodosUsuarios() {
+  const userDataString = localStorage.getItem("userData");
+  if (!userDataString) throw new Error("Usuário não autenticado.");
+  const userData = JSON.parse(userDataString);
+  const token = userData.token;
+
+  const url = `${API_URL_USERS}?populate=role`;
+  const response = await fetch(url, {
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error?.message || "Erro ao buscar usuários.");
+  }
+  return await response.json();
+}
+
+// Updated function to update the role of a user.
+async function atualizarRoleUsuario(userId, newRole) {
+  const userDataString = localStorage.getItem("userData");
+  if (!userDataString) throw new Error("Usuário não autenticado.");
+  const userData = JSON.parse(userDataString);
+  const token = userData.token;
+
+  // Map role names to their relation id (use your Strapi configuration values)
+  const roleMapping = {
+    "Barbeiro": 4,
+    "Cliente": 1
+  };
+  const newRoleId = roleMapping[newRole];
+  if (!newRoleId) {
+    throw new Error("Role inválido para atualização.");
+  }
+
+  // Use PUT with the correct API endpoint for Strapi v5.
+  // The request payload is sent directly instead of under a "data" key.
+  const url = `${API_URL_USERS}/${userId}`;
+  const body = JSON.stringify({
+    role: newRoleId
+  });
+  console.log("PUT update for user", userId, "payload:", body);
+
+  const response = await fetch(url, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: `Bearer ${token}`
+    },
+    body
+  });
+  const responseData = await response.json();
+  console.log("PUT update response:", responseData);
+  if (!response.ok) {
+    throw new Error(responseData.error?.message || "Erro ao atualizar usuário.");
+  }
+  return responseData;
+}
+
+// ----------------------------------
+// FUNÇÃO PARA EDITAR UMA RESERVA (UTILIZANDO documentId)
+// ----------------------------------
+async function editarReserva(identifier, dia, horario) {
+  const userDataString = localStorage.getItem("userData");
+  if (!userDataString) throw new Error("Usuário não autenticado.");
+  const userData = JSON.parse(userDataString);
+  const token = userData.token;
+
+  // Agora, a URL utiliza o documentId (passado como identifier)
+  const url = `http://localhost:1337/api/reservas/${identifier}`;
+  const body = JSON.stringify({ data: { dia, horario } });
+
+  const response = await fetch(url, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: `Bearer ${token}`
+    },
+    body
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || "Erro ao atualizar reserva.");
+  }
+  return await response.json();
+}
+
+// NOVA FUNÇÃO: Deletar reserva
+async function deletarReserva(identifier) {
+  const userDataString = localStorage.getItem("userData");
+  if (!userDataString) throw new Error("Usuário não autenticado.");
+  const userData = JSON.parse(userDataString);
+  const token = userData.token;
+  const url = `http://localhost:1337/api/reservas/${identifier}`;
+  const response = await fetch(url, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  if (!response.ok) {
+    let errorData;
+    try {
+      errorData = await response.json();
+    } catch (e) {
+      errorData = { error: { message: "Erro ao deletar reserva." } };
+    }
+    throw new Error(errorData.error?.message || "Erro ao deletar reserva.");
+  }
+  // Se a resposta for 204 (No Content), retorna um objeto vazio sem tentar parsear JSON.
+  if (response.status === 204) return {};
+  const text = await response.text();
+  return text ? JSON.parse(text) : {};
+}
+
+// NOVA FUNÇÃO: Atualizar informações do usuário
+async function atualizarUsuario(userId, data) {
+  const userDataString = localStorage.getItem("userData");
+  if (!userDataString) throw new Error("Usuário não autenticado.");
+  const userData = JSON.parse(userDataString);
+  const token = userData.token;
+  const url = `${API_URL_USERS}/${userId}`;
+  const response = await fetch(url, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(data),
+  });
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error?.message || "Erro ao atualizar usuário.");
+  }
+  return await response.json();
+}
+
+// NOVA FUNÇÃO: Deletar usuário
+async function deletarUsuario(userId) {
+  const userDataString = localStorage.getItem("userData");
+  if (!userDataString) throw new Error("Usuário não autenticado.");
+  const userData = JSON.parse(userDataString);
+  const token = userData.token;
+  const url = `${API_URL_USERS}/${userId}`;
+  const response = await fetch(url, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error?.message || "Erro ao deletar usuário.");
+  }
+  return await response.json();
 }

@@ -10,24 +10,23 @@
     />
     <link rel="stylesheet" href="./styles/output.css" />
   </head>
-  <body class="bg-black text-white overflow-x-hidden">
+  <body class="bg-black text-white min-h-screen flex flex-col">
     <div id="header-container" class="relative z-50"></div>
 
     <main
-      class="w-full min-h-screen bg-cover bg-center bg-opacity-50 relative"
+      class="flex-grow flex items-center justify-center p-4 bg-cover bg-center"
       style="background-image: url('./assets/bg.jpg')"
     >
-      <div class="absolute inset-0 bg-black bg-opacity-70"></div>
-      <div class="relative z-10 flex flex-col justify-center items-center h-full">
+      <div class="bg-black bg-opacity-70 w-full max-w-md p-6 rounded-lg">
         <div
-          class="bg-gray-900 p-6 rounded-lg shadow-lg w-11/12 max-w-md text-white"
+          class="bg-gray-900 p-6 rounded-lg shadow-lg w-11/11 max-w-md text-white"
         >
           <h2 class="text-2xl font-bold mb-6 text-center">
             Cadastro de Reserva
           </h2>
           <form
             id="reserva-form"
-            onsubmit="criarReserva(event)"
+            onsubmit="validarHorarioReserva(event)"
             class="space-y-4"
           >
             <div>
@@ -104,6 +103,7 @@
     <!-- Scripts -->
     <script src="./scripts/index.js"></script>
     <script src="./scripts/api.js"></script>
+    <script src="./scripts/validation.js"></script>
     <script>
       // Ao carregar a página, buscar barbeiros e preencher o SELECT
       window.addEventListener('DOMContentLoaded', async () => {
@@ -133,6 +133,21 @@
           barberSelect.innerHTML = '<option value="">Erro ao carregar barbeiros</option>';
         }
       });
+
+      function validarHorarioReserva(event) {
+        event.preventDefault();
+        const dateInput = document.getElementById("date").value;
+        const timeInput = document.getElementById("time").value;
+        const error = validateReservationDateTime(dateInput, timeInput);
+        const mensagemReserva = document.getElementById("mensagem-reserva");
+        if (error) {
+          mensagemReserva.textContent = error;
+          mensagemReserva.className = "text-red-500 text-center";
+          return;
+        }
+        // Chama a função original para criar a reserva
+        criarReserva(event);
+      }
     </script>
   </body>
 </html>

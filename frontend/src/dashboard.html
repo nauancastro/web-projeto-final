@@ -45,6 +45,8 @@
               <th class="border border-gray-700 px-4 py-2">Cliente</th>
               <th class="border border-gray-700 px-4 py-2">Telefone</th>
               <th class="border border-gray-700 px-4 py-2">Serviço</th>
+              <!-- Nova coluna para ações -->
+              <th class="border border-gray-700 px-4 py-2">Ações</th>
             </tr>
           </thead>
           <tbody id="reservations-list">
@@ -55,16 +57,33 @@
       </div>
     </main>
 
+    <!-- Modal para editar reserva no dashboard -->
+    <div id="edit-reserva-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden justify-center items-center">
+      <div class="bg-gray-800 p-6 rounded-lg">
+        <form id="edit-reserva-form">
+          <input type="hidden" id="edit-reserva-id" />
+          <div class="mb-4">
+            <label for="edit-date" class="block mb-1">Data:</label>
+            <input type="date" id="edit-date" required class="p-1 rounded bg-gray-700" />
+          </div>
+          <div class="mb-4">
+            <label for="edit-time" class="block mb-1">Horário:</label>
+            <input type="time" id="edit-time" required class="p-1 rounded bg-gray-700" />
+          </div>
+          <div class="flex justify-end">
+            <button type="button" id="cancel-edit" class="mr-2 p-1 bg-red-500 rounded">Cancelar</button>
+            <button type="submit" class="p-1 bg-green-500 rounded">Salvar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
     <div id="footer-container" class="w-full"></div>
 
     <script src="./scripts/index.js"></script>
     <script src="./scripts/api.js"></script>
+    <script src="./scripts/validation.js"></script>
     <script>
-      // Função para deslogar (opcional)
-      function logout() {
-        localStorage.removeItem("userData");
-        window.location.href = "/frontend/src/login.html";
-      }
 
       // Carregar as reservas ao iniciar a página
       window.addEventListener("DOMContentLoaded", async () => {
@@ -87,7 +106,7 @@
 
           // Monta cada linha da tabela
           response.reservas.forEach((reserva) => {
-            const { dia, horario, servico, cliente } = reserva;
+            const { dia, horario, servico, cliente, documentId } = reserva;
 
             // Cliente pode ser `null`, então tratamos o caso
             let nomeCliente = "Desconhecido";
@@ -105,7 +124,27 @@
           <td class="border border-gray-700 px-4 py-2 text-center">${nomeCliente}</td>
           <td class="border border-gray-700 px-4 py-2 text-center">${telefoneCliente}</td>
           <td class="border border-gray-700 px-4 py-2 text-center">${formatarServico(servico)}</td>
+          <td class="border border-gray-700 px-4 py-2 text-center"></td>
         `;
+            const actionCell = row.querySelector("td:last-child");
+            // Somente exibir o botão se documentId existir
+            if (documentId) {
+              const editBtn = document.createElement("button");
+              editBtn.className = "edit-btn p-1 bg-blue-500 rounded";
+              editBtn.setAttribute("data-identifier", documentId);
+              editBtn.setAttribute("data-date", dia);
+              editBtn.setAttribute("data-time", horario);
+              editBtn.textContent = "Editar";
+              actionCell.appendChild(editBtn);
+
+              const deleteBtn = document.createElement("button");
+              deleteBtn.className = "delete-btn p-1 bg-red-500 rounded";
+              deleteBtn.setAttribute("data-identifier", documentId);
+              deleteBtn.textContent = "Excluir";
+              actionCell.appendChild(deleteBtn);
+            } else {
+              actionCell.textContent = "Não editável";
+            }
             reservationsBody.appendChild(row);
           });
         } catch (err) {
@@ -141,6 +180,58 @@
             return servico;
         }
       }
+
+      // Listener para modal no dashboard
+      document.getElementById("reservations-list").addEventListener("click", (e) => {
+        if (e.target.classList.contains("edit-btn")) {
+          const identifier = e.target.getAttribute("data-identifier");
+          const dia = e.target.getAttribute("data-date");
+          const horario = e.target.getAttribute("data-time");
+          document.getElementById("edit-reserva-id").value = identifier;
+          document.getElementById("edit-date").value = dia;
+          document.getElementById("edit-time").value = horario.slice(0,5);
+          document.getElementById("edit-reserva-modal").classList.remove("hidden");
+        }
+      });
+
+      document.getElementById("cancel-edit").addEventListener("click", () => {
+        document.getElementById("edit-reserva-modal").classList.add("hidden");
+      });
+
+      document.getElementById("edit-reserva-form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const dia = document.getElementById("edit-date").value;
+        const time = document.getElementById("edit-time").value;
+        const error = validateReservationDateTime(dia, time);
+        if (error) {
+          alert(error);
+          return;
+        }
+        const identifier = document.getElementById("edit-reserva-id").value;
+        const horario = `${time}:00.000`;
+        try {
+          await editarReserva(identifier, dia, horario);
+          alert("Reserva atualizada com sucesso!");
+          location.reload();
+        } catch (error) {
+          alert(error.message);
+        }
+      });
+
+      // Listener para deletar reserva no dashboard via delegação
+      document.getElementById("reservations-list").addEventListener("click", async (e) => {
+        if (e.target.classList.contains("delete-btn")) {
+          const identifier = e.target.getAttribute("data-identifier");
+          if (!confirm("Deseja realmente excluir esta reserva?")) return;
+          try {
+            await deletarReserva(identifier);
+            alert("Reserva deletada com sucesso!");
+            location.reload();
+          } catch (error) {
+            alert(error.message);
+          }
+        }
+      });
     </script>
   </body>
 </html>
