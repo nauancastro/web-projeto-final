@@ -78,6 +78,16 @@
       </div>
     </div>
 
+    <!-- Novo modal para ver avaliação -->
+    <div id="view-avaliacao-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden justify-center items-center">
+      <div class="bg-gray-800 p-6 rounded-lg">
+        <h3 class="text-xl font-bold mb-4">Avaliação do Cliente</h3>
+        <p id="avaliacao-comentario" class="mb-2"></p>
+        <div id="avaliacao-nota" class="mb-4 flex"></div>
+        <button type="button" id="close-avaliacao" class="p-1 bg-red-500 rounded">Fechar</button>
+      </div>
+    </div>
+
     <div id="footer-container" class="w-full"></div>
 
     <script src="./scripts/index.js"></script>
@@ -106,7 +116,7 @@
 
           // Monta cada linha da tabela
           response.reservas.forEach((reserva) => {
-            const { dia, horario, servico, cliente, documentId } = reserva;
+            const { dia, horario, servico, cliente, documentId, avaliacao_cliente } = reserva;
 
             // Cliente pode ser `null`, então tratamos o caso
             let nomeCliente = "Desconhecido";
@@ -142,6 +152,16 @@
               deleteBtn.setAttribute("data-identifier", documentId);
               deleteBtn.textContent = "Excluir";
               actionCell.appendChild(deleteBtn);
+
+              // Novo: botão para ver avaliação
+              if (avaliacao_cliente) {
+                const viewAvaliacaoBtn = document.createElement("button");
+                viewAvaliacaoBtn.className = "view-avaliacao-btn p-1 bg-green-500 rounded ml-2";
+                viewAvaliacaoBtn.setAttribute("data-comentario", avaliacao_cliente.comentario);
+                viewAvaliacaoBtn.setAttribute("data-nota", avaliacao_cliente.nota);
+                viewAvaliacaoBtn.textContent = "Ver Avaliação";
+                actionCell.appendChild(viewAvaliacaoBtn);
+              }
             } else {
               actionCell.textContent = "Não editável";
             }
@@ -191,11 +211,27 @@
           document.getElementById("edit-date").value = dia;
           document.getElementById("edit-time").value = horario.slice(0,5);
           document.getElementById("edit-reserva-modal").classList.remove("hidden");
+        } else if (e.target.classList.contains("view-avaliacao-btn")) {
+          const comentario = e.target.getAttribute("data-comentario");
+          const nota = e.target.getAttribute("data-nota");
+          document.getElementById("avaliacao-comentario").textContent = `Comentário: ${comentario}`;
+          const avaliacaoNota = document.getElementById("avaliacao-nota");
+          avaliacaoNota.innerHTML = "";
+          for (let i = 0; i < nota; i++) {
+            const star = document.createElement("span");
+            star.textContent = "⭐";
+            avaliacaoNota.appendChild(star);
+          }
+          document.getElementById("view-avaliacao-modal").classList.remove("hidden");
         }
       });
 
       document.getElementById("cancel-edit").addEventListener("click", () => {
         document.getElementById("edit-reserva-modal").classList.add("hidden");
+      });
+
+      document.getElementById("close-avaliacao").addEventListener("click", () => {
+        document.getElementById("view-avaliacao-modal").classList.add("hidden");
       });
 
       document.getElementById("edit-reserva-form").addEventListener("submit", async (e) => {

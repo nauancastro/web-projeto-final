@@ -10,10 +10,11 @@ export default factories.createCoreController("api::reserva.reserva", ({ strapi 
       if (user.role?.type !== "barbeiro") {
         return ctx.forbidden("Acesso negado");
       }
-      const reservas = await strapi.entityService.findMany("api::reserva.reserva", {
-        filters: { barbeiro: user.id },
-        populate: { cliente: true }
+      const reservas = await strapi.db.query("api::reserva.reserva").findMany({
+        where: { barbeiro: user.id },
+        populate: { cliente: true, avaliacao_cliente: true }
       });
+  
       // Remove duplicatas filtrando pelo documentId
       const reservasUnicas = reservas.reduce((acc, reserva) => {
         if (!acc.some(r => r.documentId === reserva.documentId)) {
@@ -21,10 +22,11 @@ export default factories.createCoreController("api::reserva.reserva", ({ strapi 
         }
         return acc;
       }, []);
+  
       // Formata os dados para a resposta
       const reservasFormatadas = reservasUnicas.map(reserva => ({
         id: reserva.id,
-        documentId: reserva.documentId, // Adicionado para edição
+        documentId: reserva.documentId,
         dia: reserva.dia,
         horario: reserva.horario,
         servico: reserva.servico,
@@ -35,8 +37,10 @@ export default factories.createCoreController("api::reserva.reserva", ({ strapi 
               email: reserva.cliente.email,
               telefone: reserva.cliente.telefone
             }
-          : null
+          : null,
+        avaliacao_cliente: reserva.avaliacao_cliente
       }));
+  
       ctx.body = {
         barbeiro: {
           id: user.id,
@@ -45,6 +49,7 @@ export default factories.createCoreController("api::reserva.reserva", ({ strapi 
         reservas: reservasFormatadas
       };
     } catch (error) {
+      console.error(error);
       ctx.internalServerError("Erro ao buscar reservas.");
     }
   },
@@ -77,6 +82,7 @@ export default factories.createCoreController("api::reserva.reserva", ({ strapi 
         dia: reserva.dia,
         horario: reserva.horario,
         servico: reserva.servico,
+        concluida: reserva.concluida,
         barbeiro: reserva.barbeiro
           ? {
               id: reserva.barbeiro.id,

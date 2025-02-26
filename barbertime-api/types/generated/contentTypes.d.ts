@@ -369,6 +369,44 @@ export interface AdminUser extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiAvaliacaoAvaliacao extends Struct.CollectionTypeSchema {
+  collectionName: 'avaliacaos';
+  info: {
+    description: '';
+    displayName: 'Avalia\u00E7\u00E3o';
+    pluralName: 'avaliacaos';
+    singularName: 'avaliacao';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    comentario: Schema.Attribute.String;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::avaliacao.avaliacao'
+    > &
+      Schema.Attribute.Private;
+    nota: Schema.Attribute.Integer &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 5;
+          min: 1;
+        },
+        number
+      >;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiReservaReserva extends Struct.CollectionTypeSchema {
   collectionName: 'reservas';
   info: {
@@ -381,6 +419,10 @@ export interface ApiReservaReserva extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
+    avaliacao_cliente: Schema.Attribute.Relation<
+      'oneToOne',
+      'api::avaliacao.avaliacao'
+    >;
     barbeiro: Schema.Attribute.Relation<
       'manyToOne',
       'plugin::users-permissions.user'
@@ -389,6 +431,7 @@ export interface ApiReservaReserva extends Struct.CollectionTypeSchema {
       'manyToOne',
       'plugin::users-permissions.user'
     >;
+    concluida: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -930,6 +973,7 @@ declare module '@strapi/strapi' {
       'admin::transfer-token': AdminTransferToken;
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
+      'api::avaliacao.avaliacao': ApiAvaliacaoAvaliacao;
       'api::reserva.reserva': ApiReservaReserva;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;

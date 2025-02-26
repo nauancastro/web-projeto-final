@@ -200,9 +200,29 @@ document.addEventListener("DOMContentLoaded", () => {
           deleteButton.textContent = "Excluir";
         }
   
+        // Novo: cria botão "Concluir"
+        const concludeButton = document.createElement("button");
+        concludeButton.className = "conclude-btn p-1 rounded ml-2";
+        if (identifier) {
+          concludeButton.setAttribute("data-identifier", identifier);
+          if (rec.concluida === true || rec.concluida === "true") {
+            concludeButton.textContent = "Avaliado";
+            concludeButton.disabled = true;
+            concludeButton.classList.add("bg-gray-500");
+          } else {
+            concludeButton.textContent = "Concluir";
+            concludeButton.disabled = false;
+            concludeButton.classList.add("bg-green-700");
+          }
+        } else {
+          concludeButton.textContent = "Não Concluível";
+          concludeButton.disabled = true;
+        }
+  
         // Adiciona ambos na célula de ações
         actionCell.appendChild(editButton);
         actionCell.appendChild(deleteButton);
+        actionCell.appendChild(concludeButton);
         reservasBody.appendChild(tr);
       });
     } catch (err) {

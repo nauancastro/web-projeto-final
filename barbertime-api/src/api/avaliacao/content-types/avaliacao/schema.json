@@ -1,0 +1,25 @@
+{
+  "kind": "collectionType",
+  "collectionName": "avaliacaos",
+  "info": {
+    "singularName": "avaliacao",
+    "pluralName": "avaliacaos",
+    "displayName": "Avaliação",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "comentario": {
+      "type": "string"
+    },
+    "nota": {
+      "type": "integer",
+      "max": 5,
+      "min": 1,
+      "required": true
+    }
+  }
+}

@@ -57,6 +57,26 @@
       </form>
     </div>
   </div>
+  <!-- Novo modal para Review de Conclusão -->
+  <div id="conclude-review-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex justify-center items-center">
+    <div class="bg-gray-800 p-6 rounded-lg w-full max-w-md">
+      <form id="conclude-review-form">
+        <input type="hidden" id="review-reserva-id" />
+        <textarea id="review-text" placeholder="Deixe seu comentário..." class="w-full p-2 rounded bg-gray-700 text-white mb-4" rows="3"></textarea>
+        <div class="flex justify-center mb-4">
+          <span class="star cursor-pointer text-gray-400 text-2xl" data-value="1">&#9733;</span>
+          <span class="star cursor-pointer text-gray-400 text-2xl" data-value="2">&#9733;</span>
+          <span class="star cursor-pointer text-gray-400 text-2xl" data-value="3">&#9733;</span>
+          <span class="star cursor-pointer text-gray-400 text-2xl" data-value="4">&#9733;</span>
+          <span class="star cursor-pointer text-gray-400 text-2xl" data-value="5">&#9733;</span>
+        </div>
+        <div class="flex justify-end">
+          <button type="button" id="cancel-review" class="mr-2 p-1 bg-red-500 rounded">Cancelar</button>
+          <button type="submit" class="p-1 bg-green-500 rounded">Enviar Review</button>
+        </div>
+      </form>
+    </div>
+  </div>
   <div id="footer-container" class="w-full"></div>
   <!-- Scripts -->
   <script src="./scripts/index.js"></script>
@@ -116,6 +136,8 @@
           const barbeiroName = rec.barbeiro 
              ? (rec.barbeiro.data?.attributes?.username || rec.barbeiro.nome || "N/A")
              : "N/A";
+          
+          // Criação dos botões:
           const editButton = document.createElement("button");
           editButton.className = "edit-btn p-1 bg-blue-500 rounded";
           if (identifier) {
@@ -127,12 +149,32 @@
             editButton.textContent = "Não editável";
             editButton.disabled = true;
           }
-          // Novo: cria o botão de excluir
+          
           const deleteButton = document.createElement("button");
           deleteButton.className = "delete-btn p-1 bg-red-500 rounded ml-2";
           if (identifier) {
             deleteButton.setAttribute("data-identifier", identifier);
             deleteButton.textContent = "Excluir";
+          }
+          
+          // Novo: cria o botão "Concluir" ou "Avaliado" se já concluída
+          const concludeButton = document.createElement("button");
+          concludeButton.className = "conclude-btn p-1 rounded ml-2";
+          if (identifier) {
+            concludeButton.setAttribute("data-identifier", identifier);
+            // Se a reserva já foi concluída, ajuste o texto e desabilite:
+            if (rec.concluida === true || rec.concluida === "true") {
+              concludeButton.textContent = "Avaliado";
+              concludeButton.disabled = true;
+              concludeButton.classList.add("bg-gray-500");
+            } else {
+              concludeButton.textContent = "Concluir";
+              concludeButton.disabled = false;
+              concludeButton.classList.add("bg-green-700");
+            }
+          } else {
+            concludeButton.textContent = "Não Concluível";
+            concludeButton.disabled = true;
           }
     
           const tr = document.createElement("tr");
@@ -147,6 +189,7 @@
           const actionCell = tr.querySelector("td:last-child");
           actionCell.appendChild(editButton);
           actionCell.appendChild(deleteButton);
+          actionCell.appendChild(concludeButton);
           reservasBody.appendChild(tr);
         });
       } catch (err) {
@@ -170,6 +213,109 @@
         } catch (error) {
           alert(error.message);
         }
+      }
+    });
+
+    // Atualiza listener para o botão "Concluir" em Minhas Reservas
+    document.getElementById("reservas-cliente-corpo").addEventListener("click", (e) => {
+      if (e.target.classList.contains("conclude-btn")) {
+        // Abre o modal de review de conclusão
+        document.getElementById("conclude-review-modal").classList.remove("hidden");
+        // Opcional: salvar o identifier da reserva em um input hidden para futura referência
+        document.getElementById("review-reserva-id").value = e.target.getAttribute("data-identifier");
+      }
+    });
+    
+    // Listener para fechar o modal de Review
+    document.getElementById("cancel-review").addEventListener("click", () => {
+      document.getElementById("conclude-review-modal").classList.add("hidden");
+    });
+    
+    // Variável para armazenar a nota selecionada
+    let selectedRating = 0;
+    // Listener para as estrelas para definir a nota
+    document.querySelectorAll('#conclude-review-modal .star').forEach(star => {
+      star.addEventListener('click', () => {
+        selectedRating = parseInt(star.getAttribute('data-value'));
+        // Atualiza visualmente as estrelas
+        document.querySelectorAll('#conclude-review-modal .star').forEach(s => {
+          if(parseInt(s.getAttribute('data-value')) <= selectedRating){
+            s.classList.remove('text-gray-400');
+            s.classList.add('text-yellow-400');
+          } else {
+            s.classList.remove('text-yellow-400');
+            s.classList.add('text-gray-400');
+          }
+        });
+      });
+    });
+    
+    // Atualiza a submissão do formulário de review para fazer as requisições à API
+    document.getElementById("conclude-review-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      // Validação: se nenhuma nota foi selecionada, alerta o usuário
+      if (selectedRating < 1 || selectedRating > 5) {
+        alert("Por favor, selecione uma nota de 1 a 5.");
+        return;
+      }
+      const comentario = document.getElementById("review-text").value.trim();
+      if (!comentario) {
+        alert("Por favor, escreva seu comentário.");
+        return;
+      }
+      const reservaId = document.getElementById("review-reserva-id").value;
+      try {
+        // Primeira requisição: POST em /api/avaliacaos
+        const postResponse = await fetch("http://localhost:1337/api/avaliacaos", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json"
+          },
+          body: JSON.stringify({
+            data: {
+              comentario,
+              nota: selectedRating
+            }
+          })
+        });
+        if (!postResponse.ok) {
+          const errorData = await postResponse.json();
+          throw new Error(errorData.error?.message || "Erro ao enviar avaliação.");
+        }
+        const postResult = await postResponse.json();
+        // Assume que o ID da avaliação está em postResult.data.id
+        const avaliacaoId = postResult.data.id;
+        
+        // Segunda requisição: PUT em /api/reservas/${reservaId} para associar a avaliação e marcar como concluída
+        const putResponse = await fetch(`http://localhost:1337/api/reservas/${reservaId}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json"
+          },
+          body: JSON.stringify({
+            data: {
+              avaliacao_cliente: avaliacaoId,
+              concluida: true
+            }
+          })
+        });
+        if (!putResponse.ok) {
+          const errorData = await putResponse.json();
+          throw new Error(errorData.error?.message || "Erro ao atualizar a reserva.");
+        }
+        alert("Review enviada e reserva marcada como concluída!");
+        // Fecha o modal e reseta o formulário e a nota
+        document.getElementById("conclude-review-modal").classList.add("hidden");
+        e.target.reset();
+        selectedRating = 0;
+        document.querySelectorAll('#conclude-review-modal .star').forEach(s => {
+          s.classList.remove('text-yellow-400');
+          s.classList.add('text-gray-400');
+        });
+      } catch (error) {
+        alert(error.message);
       }
     });
   </script>

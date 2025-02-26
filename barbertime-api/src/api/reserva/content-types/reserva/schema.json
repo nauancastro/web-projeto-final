@@ -38,6 +38,15 @@
         "barba",
         "barboterapia"
       ]
+    },
+    "avaliacao_cliente": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::avaliacao.avaliacao"
+    },
+    "concluida": {
+      "type": "boolean",
+      "default": false
     }
   }
 }
