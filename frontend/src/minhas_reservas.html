@@ -265,12 +265,19 @@
       }
       const reservaId = document.getElementById("review-reserva-id").value;
       try {
+        const userDataString = localStorage.getItem("userData");
+        if (!userDataString) {
+          throw new Error("Usuário não autenticado.");
+        }
+        const userData = JSON.parse(userDataString);
+        const token = userData.token;
         // Primeira requisição: POST em /api/avaliacaos
         const postResponse = await fetch("http://localhost:1337/api/avaliacaos", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Accept: "application/json"
+            Accept: "application/json",
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
             data: {
@@ -285,18 +292,19 @@
         }
         const postResult = await postResponse.json();
         // Assume que o ID da avaliação está em postResult.data.id
-        const avaliacaoId = postResult.data.id;
+        const avaliacaoDocumentId = postResult.data.documentId;
         
         // Segunda requisição: PUT em /api/reservas/${reservaId} para associar a avaliação e marcar como concluída
         const putResponse = await fetch(`http://localhost:1337/api/reservas/${reservaId}`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
-            Accept: "application/json"
+            Accept: "application/json",
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
             data: {
-              avaliacao_cliente: avaliacaoId,
+              avaliacao_cliente: avaliacaoDocumentId,
               concluida: true
             }
           })
